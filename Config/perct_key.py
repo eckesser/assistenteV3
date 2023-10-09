@@ -1,24 +1,31 @@
 import json
 import os
 
-def save_to_json(life_percent, prayer_percent, pet_life_percent):
-    # Verifica se a pasta 'Json' existe, caso contrário, cria
-    if not os.path.exists('Json'):
-        os.makedirs('Json')
+class JsonSaver:
 
-    data = {
-        'life_percent': life_percent,
-        'prayer_percent': prayer_percent,
-        'pet_life_percent': pet_life_percent
-    }
+    def __init__(self):
+        pass
 
-    with open('Json/percent_key.json', 'w') as f:
-        json.dump(data, f, indent=4)
+    def save_to_json(self, life_percent, prayer_percent, pet_life_percent):
+        if not os.path.exists('Json'):
+            os.makedirs('Json')
 
-if __name__ == "__main__":
-    life_percent = int(input("Informe a porcentagem (em valor inteiro) para life_percent: "))
-    prayer_percent = int(input("Informe a porcentagem (em valor inteiro) para prayer_percent: "))
-    pet_life_percent = int(input("Informe a porcentagem (em valor inteiro) para pet_life_percent: "))
+        data = {
+            'life_percent': life_percent,
+            'prayer_percent': prayer_percent,
+            'pet_life_percent': pet_life_percent
+        }
 
-    save_to_json(life_percent, prayer_percent, pet_life_percent)
-    print("Dados salvos com sucesso!")
+        with open('Json/percent_key.json', 'w') as f:
+            json.dump(data, f, indent=4)
+
+    def input_and_save(self):
+        life_percent = int(input("Informe a porcentagem (em valor inteiro) para life_percent: "))
+        prayer_percent = int(input("Informe a porcentagem (em valor inteiro) para prayer_percent: "))
+        pet_life_percent = int(input("Informe a porcentagem (em valor inteiro) para pet_life_percent: "))
+
+        self.save_to_json(life_percent, prayer_percent, pet_life_percent)
+        print("Dados salvos com sucesso!")
+
+saver = JsonSaver()
+saver.input_and_save()

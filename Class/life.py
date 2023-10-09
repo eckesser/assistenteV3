@@ -13,7 +13,3 @@ def getLife():
     coords_life = ocr_processor.data['coordinates']['coords_life']
     percent = ocr_processor.ocr_from_coords(coords_life)
     return percent
-
-while True:
-    
-    print(getLife())

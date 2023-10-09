@@ -13,7 +13,3 @@ def getPet_life():
     coords_pet_life = ocr_processor.data['coordinates']['coords_pet_life']
     percent = ocr_processor.ocr_from_coords(coords_pet_life)
     return percent
-
-while True:
-    
-    print(getPet_life())

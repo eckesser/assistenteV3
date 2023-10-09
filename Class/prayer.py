@@ -13,7 +13,3 @@ def getPrayer():
     coords_prayer = ocr_processor.data['coordinates']['coords_pray']
     percent = ocr_processor.ocr_from_coords(coords_prayer)
     return percent
-
-while True:
-    
-    print(getPrayer())
