@@ -20,9 +20,9 @@ class JsonSaver:
             json.dump(data, f, indent=4)
 
     def input_and_save(self):
-        life_percent = int(input("Informe a porcentagem (em valor inteiro) para life_percent: "))
-        prayer_percent = int(input("Informe a porcentagem (em valor inteiro) para prayer_percent: "))
-        pet_life_percent = int(input("Informe a porcentagem (em valor inteiro) para pet_life_percent: "))
+        life_percent = int(input("Informe a porcentagem (em valor inteiro) para Life: "))
+        prayer_percent = int(input("Informe a porcentagem (em valor inteiro) para Prayer: "))
+        pet_life_percent = int(input("Informe a porcentagem (em valor inteiro) para Pet Life: "))
 
         self.save_to_json(life_percent, prayer_percent, pet_life_percent)
         print("Dados salvos com sucesso!")
