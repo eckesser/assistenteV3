@@ -19,40 +19,56 @@ from Class.life import getLife
 from Class.prayer import getPrayer
 from Class.life_pet import getPet_life
 
-life_key = ['f5', 'f6', 'f7']
-life_percent = 98
-prayer_key = ['tab']
-prayer_percent = 95
-pet_life_key = ['3', '4']
-pet_life_percent = 30
+life_key = ['']
+life_percent = 1
+prayer_key = ['']
+prayer_percent = 1
+pet_life_key = ['']
+pet_life_percent = 1
+
 
 class Life:
     def execute(self):
         while True:
-            life_value = getLife()
-            if life_percent != life_value:
-                for key in life_key:
-                    press(key)
-                    sleep(random.uniform(0, 0.7))
-            sleep(random.uniform(0.5, 1))
+            try:
+                load_config_from_json()  # Carregar configurações a cada iteração
+                life_value = getLife()
+                if life_value < life_percent:  # A tecla será pressionada apenas se life_value for menor que life_percent
+                    for key in life_key:
+                        press(key)
+                        sleep(random.uniform(0, 0.7))
+                sleep(random.uniform(0.5, 1))
+            except Exception as e:
+                print(f"Error in Life class: {e}. Restarting...")
+                continue
 
 class Prayer:
     def execute(self):
         while True:
-            prayer_value = getPrayer()
-            if prayer_percent != prayer_value:
-                press(prayer_key[0])
-            sleep(random.uniform(0.5, 1))
+            try:
+                load_config_from_json()  # Carregar configurações a cada iteração
+                prayer_value = getPrayer()
+                if prayer_value < prayer_percent:
+                    press(prayer_key[0])
+                sleep(random.uniform(0.5, 1))
+            except Exception as e:
+                print(f"Error in Prayer class: {e}. Restarting...")
+                continue
 
 class LifePet:
     def execute(self):
         while True:
-            pet_life_value = getPet_life()
-            if pet_life_percent != pet_life_value:
-                for key in pet_life_key:
-                    press(key)
-                    sleep(random.uniform(0, 0.7))
-            sleep(random.uniform(0.5, 1))
+            try:
+                load_config_from_json()  # Carregar configurações a cada iteração
+                pet_life_value = getPet_life()
+                if pet_life_value < pet_life_percent:
+                    for key in pet_life_key:
+                        press(key)
+                        sleep(random.uniform(0, 0.7))
+                sleep(random.uniform(0.5, 1))
+            except Exception as e:
+                print(f"Error in LifePet class: {e}. Restarting...")
+                continue
 
 def load_config_from_json():
     # Carregando configurações das teclas
@@ -103,6 +119,5 @@ def main_threading():
     pet_thread.join()
 
 if __name__ == "__main__":
-    load_config_from_json()  # Carrega as configurações dos arquivos JSON
     execute_classes_in_sequence()
     main_threading()
