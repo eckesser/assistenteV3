@@ -12,9 +12,7 @@ root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_directory)
 
 from Config.rscheck import is_runescape_running
-from Config.coords import ImageFinder
-from Config.perct_key import JsonSaver
-from Config.keys import KeyManager
+
 from Class.life import getLife
 from Class.prayer import getPrayer
 from Class.life_pet import getPet_life
@@ -28,6 +26,7 @@ pet_life_percent = 1
 
 running = True
 paused = False
+restart = False
 
 class Life:
     def execute(self):
@@ -93,15 +92,24 @@ def load_config_from_json():
     pet_life_percent = percent_config.get('pet_life_percent', pet_life_percent)
 
 def check_for_exit_or_pause_key():
-    global running, paused
+    global running, paused, restart
     while running:
         if keyboard.is_pressed('insert'):
             paused = not paused
-            print("Paused" if paused else "Resumed")
+            print("Pausado" if paused else "Resumido")
             sleep(1)
+        if keyboard.is_pressed('shift') and keyboard.is_pressed('end'):
+            restart = True
+            break
         sleep(0.1)
 
+
 def execute_classes_in_sequence():
+
+    from Config.coords import ImageFinder
+    from Config.perct_key import JsonSaver
+    from Config.keys import KeyManager
+
     while True:
         try:
             if is_runescape_running():
@@ -116,6 +124,7 @@ def execute_classes_in_sequence():
             print(f"An error occurred. Restarting the sequence.")
 
 def main_threading():
+    global restart
     exit_thread = Thread(target=check_for_exit_or_pause_key, args=())
     exit_thread.start()
 
@@ -131,23 +140,33 @@ def main_threading():
     prayer_thread.join()
     pet_thread.join()
 
+    if restart:
+        restart = False
+        main_menu()
+
 def main_menu():
     while True:
-        print("\nRuneScape Helper CLI")
+        print("\nRuneScape Assistente")
         print("-------------------------")
-        print("1. Change key settings")
-        print("2. Change percentage settings")
+        print("1. Configurar teclas")
+        print("2. Configurar porcentagem")
         print("3. Start")
         print("4. Exit")
+
+        print("Comandos:")
+        print("Botao insert para Pause e Resume do programa.")
+        print("Botao Shit+End, para PARAR o programa")
         choice = input("Enter your choice: ")
 
         if choice == "1":
+            from Config.keys import KeyManager
             # Change key settings
-            KeyManager().run
+            KeyManager()
 
         elif choice == "2":
+            from Config.perct_key import JsonSaver
             # Change percentage settings
-            JsonSaver().run
+            JsonSaver()
 
         elif choice == "3":
             execute_classes_in_sequence()
