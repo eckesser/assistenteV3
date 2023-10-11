@@ -98,7 +98,7 @@ def check_for_exit_or_pause_key():
             paused = not paused
             print("Pausado" if paused else "Resumido")
             sleep(1)
-        if keyboard.is_pressed('shift') and keyboard.is_pressed('end'):
+        if keyboard.is_pressed('home'):
             restart = True
             break
         sleep(0.1)
@@ -144,36 +144,38 @@ def main_threading():
         restart = False
         main_menu()
 
+def clear_console():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 def main_menu():
     while True:
+        clear_console()
         print("\nRuneScape Assistente")
         print("-------------------------")
         print("1. Configurar teclas")
         print("2. Configurar porcentagem")
         print("3. Start")
         print("4. Exit")
-
+        print("-------------------------")
         print("Comandos:")
-        print("Botao insert para Pause e Resume do programa.")
-        print("Botao Shit+End, para PARAR o programa")
+        print("Botao INSERT para Pause e Resume do programa.")
+        print("Botao HOME, para PARAR o programa")
+        print("-------------------------")
         choice = input("Enter your choice: ")
 
         if choice == "1":
             from Config.keys import KeyManager
-            # Change key settings
             KeyManager()
 
         elif choice == "2":
             from Config.perct_key import JsonSaver
-            # Change percentage settings
             JsonSaver()
 
         elif choice == "3":
             execute_classes_in_sequence()
             main_threading()
 
-        elif choice == "4":  # Nova opção "Start"
-            # Exit
+        elif choice == "4":
             global running
             running = False
             print("Exiting program...")
