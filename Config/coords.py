@@ -3,7 +3,9 @@ import json
 import os
 from PIL import Image
 import pytesseract
-from rscheck import is_runescape_running  # Import the function
+from Config.rscheck import is_runescape_running
+#from rscheck import is_runescape_running
+
 
 class ImageFinder:
     
@@ -49,9 +51,9 @@ class ImageFinder:
         location = pyautogui.locateOnScreen(image_path, confidence=0.9)
         if location:
             adjusted_coords = (
-                location.left + 24,
-                location.top + 0,
-                location.left + 74,
+                location.left + 22,
+                location.top + -2,
+                location.left + 80,
                 location.top + 14
             )
             return f"{adjusted_coords[0]}, {adjusted_coords[1]}, {adjusted_coords[2]}, {adjusted_coords[3]}"
@@ -59,12 +61,12 @@ class ImageFinder:
             return None
 
     def find_image_pet_coords(self, image_path):
-        location = pyautogui.locateOnScreen(image_path, confidence=0.5)
+        location = pyautogui.locateOnScreen(image_path, confidence=0.8)
         if location:
             adjusted_coords = (
-                location.left + 27,
-                location.top + 5,
-                location.left + 145,
+                location.left + 20,
+                location.top + 0,
+                location.left + 155,
                 location.top + 20
             )
             return f"{adjusted_coords[0]}, {adjusted_coords[1]}, {adjusted_coords[2]}, {adjusted_coords[3]}"
@@ -75,7 +77,7 @@ class ImageFinder:
         if is_runescape_running():
             coords_life = self.find_image_hp_coords('Imagem/cropped_hp.png')
             coords_pray = self.find_image_prayer_coords('Imagem/cropped_prayer.png')
-            coords_pet_life = self.find_image_pet_coords('Imagem/summon_life.png')
+            coords_pet_life = self.find_image_pet_coords('Imagem/cropped_summon_life.png')
 
             data = {
                 "coordinates": {

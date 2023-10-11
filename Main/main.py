@@ -41,7 +41,7 @@ class Life:
                             press(key)
                             sleep(random.uniform(0, 0.7))
                     sleep(random.uniform(0.5, 1))
-                except Exception as e:
+                except Exception:
                     print(f"Error in Life. Restarting...")
                     continue
 
@@ -55,7 +55,7 @@ class Prayer:
                     if prayer_value < prayer_percent:
                         press(prayer_key[0])
                     sleep(random.uniform(0.5, 1))
-                except Exception as e:
+                except Exception:
                     print(f"Error in Prayer. Restarting...")
                     continue
 
@@ -71,7 +71,7 @@ class LifePet:
                             press(key)
                             sleep(random.uniform(0, 0.7))
                     sleep(random.uniform(0.5, 1))
-                except Exception as e:
+                except Exception:
                     print(f"Error in Life Pet. Restarting...")
                     continue
 
@@ -106,22 +106,13 @@ def execute_classes_in_sequence():
         try:
             if is_runescape_running():
                 ImageFinder()
-
-                # Perguntar ao usuário se deseja alterar as teclas definidas anteriormente
-                response = input("Você deseja alterar as teclas definidas anteriormente? (s/n): ").strip().lower()
-                if response == "s":
-                    KeyManager().run()
-
-                # Perguntar ao usuário se deseja alterar as porcentagens definidas anteriormente
-                response = input("Você deseja alterar as porcentagens definidas anteriormente? (s/n): ").strip().lower()
-                if response == "s":
-                    JsonSaver().run()
-
+                KeyManager()
+                JsonSaver()
                 break
             else:
                 print("Please open the RuneScape program.")
                 time.sleep(5)
-        except Exception as e:
+        except Exception:
             print(f"An error occurred. Restarting the sequence.")
 
 def main_threading():
@@ -140,6 +131,37 @@ def main_threading():
     prayer_thread.join()
     pet_thread.join()
 
+def main_menu():
+    while True:
+        print("\nRuneScape Helper CLI")
+        print("-------------------------")
+        print("1. Change key settings")
+        print("2. Change percentage settings")
+        print("3. Start")
+        print("4. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            # Change key settings
+            KeyManager().run
+
+        elif choice == "2":
+            # Change percentage settings
+            JsonSaver().run
+
+        elif choice == "3":
+            execute_classes_in_sequence()
+            main_threading()
+
+        elif choice == "4":  # Nova opção "Start"
+            # Exit
+            global running
+            running = False
+            print("Exiting program...")
+            break
+
+        else:
+            print("Invalid choice! Please enter a valid option.")
+
 if __name__ == "__main__":
-    execute_classes_in_sequence()
-    main_threading()
+    main_menu()
