@@ -123,10 +123,22 @@ def execute_classes_in_sequence():
         except Exception:
             print(f"An error occurred. Restarting the sequence.")
 
+def periodic_clear_console():
+    while running:
+        time.sleep(20)
+        clear_console()
+
+def clear_console():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 def main_threading():
     global restart
     exit_thread = Thread(target=check_for_exit_or_pause_key, args=())
     exit_thread.start()
+
+    # Iniciar a thread de limpeza periódica
+    clear_thread = Thread(target=periodic_clear_console, args=())
+    clear_thread.start()
 
     life_thread = Thread(target=Life().execute, args=())
     prayer_thread = Thread(target=Prayer().execute, args=())
@@ -143,9 +155,6 @@ def main_threading():
     if restart:
         restart = False
         main_menu()
-
-def clear_console():
-    os.system('cls' if os.name == 'nt' else 'clear')
 
 def main_menu():
     while True:
