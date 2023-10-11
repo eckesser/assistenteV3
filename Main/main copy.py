@@ -50,7 +50,6 @@ def tray_icon_manager():
     tray_icon = TrayIcon("RuneScape Assistente", icon_image_green, "RuneScape Assistente", menu)
 
     def toggle_pause(icon):
-        global paused
         paused = not paused
         if paused:
             icon.icon = icon_image_red
@@ -59,7 +58,6 @@ def tray_icon_manager():
         icon.update_menu()
 
     def exit_program(icon):
-        global running
         running = False
         icon.stop()
 
@@ -145,28 +143,23 @@ def check_for_exit_or_pause_key():
         time.sleep(0.1)
 
 def execute_classes_in_sequence():
-    retry_count = 0
-    while not is_runescape_running() and retry_count < 3:
-        print('Abra o runescape e tente novamente.')
-        time.sleep(5)
-        retry_count += 1
-
-    if retry_count == 3:
-        print('Runescape não detectado após várias tentativas. Fechando o assistente.')
-        exit()
-
-    print('Runescape aberto.')
 
     from Config.coords import ImageFinder
     from Config.perct_key import JsonSaver
     from Config.keys import KeyManager
 
-    try:
-        ImageFinder()
-        KeyManager()
-        JsonSaver()
-    except Exception:
-        print(f"An error occurred. Restarting the sequence.")
+    while True:
+        try:
+            if is_runescape_running():
+                ImageFinder()
+                KeyManager()
+                JsonSaver()
+                break
+            else:
+                print("Please open the RuneScape program.")
+                time.sleep(5)
+        except Exception:
+            print(f"An error occurred. Restarting the sequence.")
 
 def periodic_clear_console():
     while running:
@@ -181,6 +174,7 @@ def main_threading():
     exit_thread = Thread(target=check_for_exit_or_pause_key, args=())
     exit_thread.start()
 
+    # Iniciar a thread de limpeza periódica
     clear_thread = Thread(target=periodic_clear_console, args=())
     clear_thread.start()
 
@@ -200,14 +194,15 @@ def main_threading():
     prayer_thread.join()
     pet_thread.join()
 
+    if is_runescape_running():
     # Verifica periodicamente se o RuneScape ainda está rodando
-    while is_runescape_running():
-        time.sleep(5)  # Verifica a cada 5 segundos
+        while is_runescape_running():
+            time.sleep(5)  # Verifica a cada segundo (pode ajustar esse valor conforme necessário)
 
-    # Se sair do loop, significa que o RuneScape foi fechado
-    print("Jogo Fechado, fechando assistente...")
-    time.sleep(3)
-    exit()
+        # Se sair do loop, significa que o RuneScape foi fechado
+        print("Jogo Fechado, fechando assistente...")
+        time.sleep(6)
+        exit()
 
     if restart:
         restart = False
@@ -251,11 +246,13 @@ def main_menu():
                 from Config.coords import ImageFinder
                 ImageFinder()
                 main_threading()
-            else:
-                print("Abra o runescape... Reiniciando programa.")
-                time.sleep(2)
-                main_menu()
 
+            else:
+                print("Abra o runescape")
+                main_threading
+                break
+
+                    
         elif choice == "4":
             global running
             running = False

@@ -2,4 +2,3 @@
 
 bibliotecas
 
-pip install kivy
