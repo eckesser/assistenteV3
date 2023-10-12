@@ -19,7 +19,7 @@ pip install easyocr keyboard numpy opencv-python Pillow psutil PyGetWindow pyaut
 - `Imagem/`: Contém imagens usadas em operações de OCR.
 - `img_return/`: Armazena imagens resultantes de algumas operações.
 - `Json/`: Contém arquivos JSON para armazenar coordenadas e configurações relacionadas às teclas.
-- `Log/`: Contém arquivos de log e um módulo para gerenciamento de erros.
+- `Log/`: Contém arquivos de log, um módulo para gerenciamento de erros e de contato com suporte.
 - `Main/`: Contém o principal arquivo de execução do projeto.
 - `OCR/`: Contém módulos relacionados ao OCR.
 
