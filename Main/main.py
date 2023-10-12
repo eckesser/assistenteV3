@@ -77,8 +77,18 @@ def minimize_window():
 def restore_window():
     windows = gw.getWindowsWithTitle('RS3 Assist')
     if windows:
-        windows[0].show()
-        windows[0].activate()
+        window = windows[0]        
+        if window.isHidden:
+            window.restore()
+        else:
+            window.activate()
+
+def monitor_window_state():
+    while running:
+        windows = gw.getWindowsWithTitle('RS3 Assist')
+        if windows and windows[0].isMinimized:
+            windows[0].hide()
+        time.sleep(0.5)
 
 def exit_program(icon):
     global running
@@ -103,7 +113,7 @@ def tray_icon_manager():
     menu = (
         MenuItem('Open', lambda icon, item: restore_window()),
         MenuItem('Pause/Resume', lambda icon, item: toggle_pause(icon)),
-        MenuItem('Log', lambda icon, item: open_log_directory(icon)),
+        #MenuItem('Log', lambda icon, item: open_log_directory(icon)),
         MenuItem('Restart', lambda icon, item: restart_program(icon)),
         MenuItem('Exit', lambda icon, item: exit_program(icon))
     )
