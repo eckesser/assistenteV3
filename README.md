@@ -8,7 +8,7 @@ Um projeto que utiliza Reconhecimento Óptico de Caracteres (OCR) e automação 
 Para instalar as bibliotecas necessárias para este projeto, use:
 
 ```bash
-pip install easyocr==1.4.1 keyboard==0.13.5 numpy==1.21.0 opencv-python==4.5.3.56 Pillow==8.2.0 psutil==5.8.0 PyGetWindow==0.0.9 pyautogui==0.9.52 pystray==0.15.0 PyYAML==5.4.1
+pip install easyocr keyboard numpy opencv-python Pillow psutil PyGetWindow pyautogui pystray PyYAML
 ```
 
 ## Estrutura do Projeto
