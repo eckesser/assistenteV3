@@ -281,7 +281,7 @@ def main_menu():
         print("-------------------------")
         print("Comandos:")
         print("Botao INSERT para Pause e Resume do programa.")
-        print("Botao HOME, para PARAR o programa")
+        print("Botao HOME, para FECHAR o programa")
         print("-------------------------")
         choice = input("Digite a opcao desejada: ")
 
