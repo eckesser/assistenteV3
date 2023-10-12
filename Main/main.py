@@ -10,6 +10,11 @@ from time import sleep
 from pyautogui import press
 import keyboard
 import pygetwindow as gw
+
+root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(root_directory)
+
+from Log import support
 from pystray import Icon as TrayIcon, MenuItem
 from PIL import Image
 
@@ -28,9 +33,6 @@ def check_and_kill_duplicate_process():
             pass
 
 check_and_kill_duplicate_process()
-
-root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(root_directory)
 
 from Log.ErrorLogger import ErrorLogger
 
@@ -59,8 +61,8 @@ paused = False
 restart = False
 
 def open_log_directory(icon):
-    log_directory = os.path.join(root_directory, 'Log')
-    os.startfile(log_directory)
+    support.Support.zip_logs()
+    support.Support.notify_user()
 
 def restart_program(icon):
     global running
@@ -113,8 +115,8 @@ def tray_icon_manager():
     menu = (
         MenuItem('Open', lambda icon, item: restore_window()),
         MenuItem('Pause/Resume', lambda icon, item: toggle_pause(icon)),
-        #MenuItem('Log', lambda icon, item: open_log_directory(icon)),
         MenuItem('Restart', lambda icon, item: restart_program(icon)),
+        MenuItem('Suporte', lambda icon, item: open_log_directory(icon)),
         MenuItem('Exit', lambda icon, item: exit_program(icon))
     )
 
@@ -260,7 +262,7 @@ def main_threading():
     prayer_thread.start()
     pet_thread.start()
 
-    time.sleep(10)
+    time.sleep(3)
     minimize_window()
     tray_icon_manager()
 
@@ -293,6 +295,8 @@ def main_menu():
         print("Botao INSERT para Pause e Resume do programa.")
         print("Botao HOME, para FECHAR o programa")
         print("-------------------------")
+        print("Quando o programa estiver executando ele minimizara so")
+        print("-------------------------")
         choice = input("Digite a opcao desejada: ")
 
         if choice == "1":
@@ -316,8 +320,9 @@ def main_menu():
                 print("Runescape aberto.")
                 from Config.coords import ImageFinder
                 ImageFinder()
+                print("Programa iniciado, minimizando...")
                 main_threading()
-                print("Programa iniciado, stealth")
+                #print("Programa iniciado, minimizando...")
             else:
                 print("Abra o runescape... Reiniciando programa.")
                 time.sleep(2)
