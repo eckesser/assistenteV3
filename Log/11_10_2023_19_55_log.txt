@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Main\main.py", line 312, in <module>
+  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Main\main.py", line 269, in main_menu
+    print("-------------------------")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [WinError 233] Não há processo no outro extremo do pipe

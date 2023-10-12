@@ -1,7 +1,9 @@
+import psutil
 import sys
 import os
 import time
 import json
+import traceback
 from threading import Thread
 import random
 from time import sleep
@@ -11,8 +13,34 @@ import pygetwindow as gw
 from pystray import Icon as TrayIcon, MenuItem
 from PIL import Image
 
+def check_and_kill_duplicate_process():
+    current_process = psutil.Process()
+    for proc in psutil.process_iter():
+        try:
+            # Verifica se o processo atual é igual ao processo em iteração
+            if proc.pid != current_process.pid:
+                cmd_line = proc.cmdline()
+                # Verifica se o script atual está na linha de comando do processo em iteração
+                if len(cmd_line) > 1 and __file__ in cmd_line[1]:
+                    print(f"Killing process {proc.pid} with command line {cmd_line}")
+                    proc.kill()
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+
+check_and_kill_duplicate_process()
+
 root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_directory)
+
+from Log.ErrorLogger import ErrorLogger
+
+def global_exception_handler(exc_type, exc_value, exc_traceback):
+    logger = ErrorLogger()
+    error_message = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+    logger.log_error(error_message)
+    sys.__excepthook__(exc_type, exc_value, exc_traceback)
+
+sys.excepthook = global_exception_handler
 
 from Config.rscheck import is_runescape_running
 from Class.life import getLife
@@ -30,41 +58,77 @@ running = True
 paused = False
 restart = False
 
+def open_log_directory(icon):
+    log_directory = os.path.join(root_directory, 'Log')
+    os.startfile(log_directory)
+
+def restart_program(icon):
+    global running
+    running = False
+    icon.stop()
+    os.system('python ' + __file__)
+    exit(0)
+
 def minimize_window():
-    window = gw.getWindowsWithTitle('RuneScape Assistente do Tio Erick')[0]
-    window.minimize()
+    windows = gw.getWindowsWithTitle('RS3 Assist')
+    if windows:
+        windows[0].hide()
+
+def restore_window():
+    windows = gw.getWindowsWithTitle('RS3 Assist')
+    if windows:
+        windows[0].show()
+        windows[0].activate()
+
+def exit_program(icon):
+    global running
+    running = False
+    icon.stop()
+    exit(0)
+
+def toggle_pause(icon):
+    global paused, tray_icon
+    paused = not paused
+    if paused:
+        tray_icon.icon = Image.open(os.path.join(root_directory, 'Icon', 'red.png'))
+    else:
+        tray_icon.icon = Image.open(os.path.join(root_directory, 'Icon', 'green.png'))
+    tray_icon.update_menu()
 
 def tray_icon_manager():
-    global paused
+    global paused, tray_icon
     icon_path_green = os.path.join(root_directory, 'Icon', 'green.png')
-    icon_path_red = os.path.join(root_directory, 'Icon', 'red.png')
-
     icon_image_green = Image.open(icon_path_green)
-    icon_image_red = Image.open(icon_path_red)
 
     menu = (
+        MenuItem('Open', lambda icon, item: restore_window()),
         MenuItem('Pause/Resume', lambda icon, item: toggle_pause(icon)),
+        MenuItem('Log', lambda icon, item: open_log_directory(icon)),
+        MenuItem('Restart', lambda icon, item: restart_program(icon)),
         MenuItem('Exit', lambda icon, item: exit_program(icon))
     )
 
-    tray_icon = TrayIcon("RuneScape Assistente", icon_image_green, "RuneScape Assistente", menu)
-
-    def toggle_pause(icon):
-        global paused
-        paused = not paused
-        if paused:
-            icon.icon = icon_image_red
-        else:
-            icon.icon = icon_image_green
-        icon.update_menu()
-
-    def exit_program(icon):
-        global running
-        running = False
-        icon.stop()
-
+    tray_icon = TrayIcon("RS3 Assist", icon_image_green, "RS3 Assist", menu)
     tray_icon.run()
 
+def check_for_exit_or_pause_key():
+    global running, paused, restart, tray_icon
+    
+    def on_key_event(e):
+        global running, paused, restart, tray_icon
+
+        if e.name == 'insert' and e.event_type == 'down':
+            toggle_pause(tray_icon)
+        elif e.name == 'home' and e.event_type == 'down':
+            restart = True
+            running = False
+            tray_icon.stop()
+            exit()
+
+    keyboard.hook(on_key_event)
+    while running:
+        time.sleep(0.1)
+        
 class Life:
     def execute(self):
         while running:
@@ -78,7 +142,7 @@ class Life:
                             sleep(random.uniform(0.2, 0.7))
                     sleep(random.uniform(0.5, 1))
                 except Exception:
-                    #print(f"Error in Life. Restarting...")
+                    print(f"Error in Life. Restarting...")
                     continue
 
 class Prayer:
@@ -92,7 +156,7 @@ class Prayer:
                         press(prayer_key[0])
                     sleep(random.uniform(0.5, 1))
                 except Exception:
-                    #print(f"Error in Prayer. Restarting...")
+                    print(f"Error in Prayer. Restarting...")
                     continue
 
 class LifePet:
@@ -108,7 +172,7 @@ class LifePet:
                             sleep(random.uniform(3, 0.7))
                     sleep(random.uniform(0.5, 1))
                 except Exception:
-                    #print(f"Error in Life Pet. Restarting...")
+                    print(f"Error in Life Pet. Restarting...")
                     continue
 
 def load_config_from_json():
@@ -127,22 +191,6 @@ def load_config_from_json():
     life_percent = percent_config.get('life_percent', life_percent)
     prayer_percent = percent_config.get('prayer_percent', prayer_percent)
     pet_life_percent = percent_config.get('pet_life_percent', pet_life_percent)
-
-def check_for_exit_or_pause_key():
-    global running, paused, restart
-    
-    def on_key_event(e):
-        global running, paused, restart
-
-        if e.name == 'insert' and e.event_type == 'down':
-            paused = not paused
-            print("Pausado" if paused else "Resumido")
-        elif e.name == 'home' and e.event_type == 'down':
-            restart = True
-
-    keyboard.hook(on_key_event)
-    while running:
-        time.sleep(0.1)
 
 def execute_classes_in_sequence():
     retry_count = 0
@@ -168,9 +216,16 @@ def execute_classes_in_sequence():
     except Exception:
         print(f"An error occurred. Restarting the sequence.")
 
+def monitor_window_state():
+    while running:
+        windows = gw.getWindowsWithTitle('RS3 Assist')
+        if windows and windows[0].isMinimized:
+            windows[0].hide()
+        time.sleep(0.5)
+
 def periodic_clear_console():
     while running:
-        time.sleep(5)
+        time.sleep(20)
         clear_console()
 
 def clear_console():
@@ -184,6 +239,9 @@ def main_threading():
     clear_thread = Thread(target=periodic_clear_console, args=())
     clear_thread.start()
 
+    window_monitor_thread = Thread(target=monitor_window_state, args=())
+    window_monitor_thread.start()
+
     life_thread = Thread(target=Life().execute, args=())
     prayer_thread = Thread(target=Prayer().execute, args=())
     pet_thread = Thread(target=LifePet().execute, args=())
@@ -192,19 +250,17 @@ def main_threading():
     prayer_thread.start()
     pet_thread.start()
 
-    time.sleep(10)  # Aguarde 10 segundos
-    minimize_window()  # Minimize a janela
-    tray_icon_manager()  # Inicie o ícone da bandeja
+    time.sleep(10)
+    minimize_window()
+    tray_icon_manager()
 
     life_thread.join()
     prayer_thread.join()
     pet_thread.join()
 
-    # Verifica periodicamente se o RuneScape ainda está rodando
     while is_runescape_running():
-        time.sleep(5)  # Verifica a cada 5 segundos
+        time.sleep(5)
 
-    # Se sair do loop, significa que o RuneScape foi fechado
     print("Jogo Fechado, fechando assistente...")
     time.sleep(3)
     exit()
@@ -216,7 +272,7 @@ def main_threading():
 def main_menu():
     while True:
         clear_console()
-        print("\nRuneScape Assistente do Tio Erick")
+        print("\nRS3 Assist")
         print("-------------------------")
         print("1. Configurar teclas")
         print("2. Configurar porcentagem")
@@ -251,6 +307,7 @@ def main_menu():
                 from Config.coords import ImageFinder
                 ImageFinder()
                 main_threading()
+                print("Programa iniciado, stealth")
             else:
                 print("Abra o runescape... Reiniciando programa.")
                 time.sleep(2)

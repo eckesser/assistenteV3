@@ -64,7 +64,7 @@ class ImageFinder:
         location = pyautogui.locateOnScreen(image_path, confidence=0.8)
         if location:
             adjusted_coords = (
-                location.left + 20,
+                location.left + 18,
                 location.top + 0,
                 location.left + 155,
                 location.top + 20
