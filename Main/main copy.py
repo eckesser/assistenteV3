@@ -139,8 +139,8 @@ class Life:
                     if life_value < life_percent:
                         for key in life_key:
                             press(key)
-                            sleep(0.5)
-                    sleep(0.5)
+                            sleep(random.uniform(0.2, 0.7))
+                    sleep(random.uniform(0.5, 1))
                 except Exception:
                     print(f"Error in Life. Restarting...")
                     continue
@@ -154,7 +154,7 @@ class Prayer:
                     prayer_value = getPrayer()
                     if prayer_value < prayer_percent:
                         press(prayer_key[0])
-                    sleep(0.5)
+                    sleep(random.uniform(0.3, 0.6))
                 except Exception:
                     print(f"Error in Prayer. Restarting...")
                     continue
@@ -170,7 +170,7 @@ class LifePet:
                         for key in pet_life_key:
                             press(key)
                             sleep(random.uniform(0.3, 0.7))
-                    sleep(0.5)
+                    sleep(random.uniform(0.5, 1))
                 except Exception:
                     print(f"Error in Life Pet. Restarting...")
                     continue
@@ -232,7 +232,7 @@ def periodic_clear_console():
         clear_console()
 
 def clear_console():
-    print('\033c')
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def main_threading():
     global restart
