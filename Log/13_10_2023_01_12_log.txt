@@ -1,9 +1,0 @@
-Traceback (most recent call last):
-  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Main\main.py", line 375, in <module>
-    main_menu()
-  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Main\main.py", line 329, in main_menu
-    from Config.configs import JsonViewerUpdated
-  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Config\configs.py", line 52, in <module>
-    JsonConfig.main()
-    ^^^^^^^^^^^^^^^
-AttributeError: type object 'JsonViewerUpdated' has no attribute 'main'

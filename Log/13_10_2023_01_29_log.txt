@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Main\main.py", line 382, in <module>
-    main_menu()
-  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Main\main.py", line 346, in main_menu
-    time.sleep(0.1)  # para evitar um loop muito rápido e uso intenso da CPU
-    ^^^^^^^^^^^^^^^
-KeyboardInterrupt

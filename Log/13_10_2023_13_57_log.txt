@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Main\main.py", line 394, in <module>
+    main_menu()
+  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Main\main.py", line 378, in main_menu
+    main_threading()
+  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Main\main.py", line 299, in main_threading
+    time.sleep(5)
+KeyboardInterrupt

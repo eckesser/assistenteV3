@@ -1,17 +1,18 @@
 
-import psutil
 import sys
 import os
 import time
 import json
 import traceback
-from threading import Thread
-import random
-from time import sleep
-from pyautogui import press
 import keyboard
 import pygetwindow as gw
-import subprocess
+import random
+import threading
+
+from threading import Thread
+from time import sleep
+from pyautogui import press
+
 
 root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_directory)
@@ -19,74 +20,16 @@ sys.path.append(root_directory)
 from Log import support
 from pystray import Icon as TrayIcon, MenuItem
 from PIL import Image
-
-def check_and_kill_duplicate_process():
-    current_pid = os.getpid()  # PID do processo atual
-    for proc in psutil.process_iter(attrs=['pid', 'name', 'cmdline']):
-        cmd_line = proc.info['cmdline']
-        if cmd_line and __file__ in cmd_line[0]:
-            # Para processos Python, verifique se é o processo atual
-            if proc.info['name'] == 'python' and proc.info['pid'] != current_pid:
-                print(f"Encerrando o processo {proc.info['pid']} com a linha de comando {cmd_line}")
-                try:
-                    proc.terminate()
-                    proc.wait(timeout=1)  # Aguardar até que o processo seja terminado
-                except psutil.NoSuchProcess:
-                    pass
-            # Para processos cmd.exe, verifique se o script atual está sendo executado
-            elif proc.info['name'] == 'cmd.exe':
-                print(f"Encerrando o processo cmd.exe com PID {proc.info['pid']} que está executando o script {__file__}")
-                try:
-                    proc.terminate()
-                    proc.wait(timeout=1)
-                except psutil.NoSuchProcess:
-                    pass
-
-check_and_kill_duplicate_process()
-
 from Log.ErrorLogger import ErrorLogger
 
 def global_exception_handler(exc_type, exc_value, exc_traceback):
-    logger = ErrorLogger()
+    logger = ErrorLogger()  
     error_message = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
     logger.log_error(error_message)
     sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
 sys.excepthook = global_exception_handler
 
-def restore_window():
-    windows = gw.getWindowsWithTitle('RS3 Assist')
-    if windows:
-        window = windows[0]        
-        if window.isHidden:
-            window.restore()
-        else:
-            window.activate()
-
-def restart_program(icon):
-    global running
-    running = False
-    icon.stop()
-    
-    # Reinicia o programa sem mostrar o terminal
-    startupinfo = subprocess.STARTUPINFO()
-    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-    subprocess.Popen(['python', __file__], startupinfo=startupinfo)
-    
-    # Notifica o usuário sobre a reinicialização
-    try:
-        from plyer import notification
-        notification.notify(
-            title='RS3 Assist',
-            message='Reiniciado',
-            timeout=5
-        )
-    except ImportError:
-        print("Plyer not installed. Skipping notification.")
-    
-    exit(0)
-
-# Rest of the code (I'll continue in the next sections)
 from Config.rscheck import is_runescape_running
 from Class.life import getLife
 from Class.prayer import getPrayer
@@ -142,7 +85,7 @@ def exit_program(icon):
     global running
     running = False
     icon.stop()
-    exit(0)
+    sys.exit(0)
 
 def toggle_pause(icon):
     global paused, tray_icon
@@ -159,9 +102,9 @@ def tray_icon_manager():
     icon_image_green = Image.open(icon_path_green)
 
     menu = (
-        #MenuItem('Open', lambda icon, item: restore_window()),
+        MenuItem('Open', lambda icon, item: restore_window()),
         MenuItem('Pause/Resume', lambda icon, item: toggle_pause(icon)),
-        #MenuItem('Restart', lambda icon, item: restart_program(icon)),
+        MenuItem('Restart', lambda icon, item: restart_program(icon)),
         MenuItem('Suporte', lambda icon, item: open_log_directory(icon)),
         MenuItem('Exit', lambda icon, item: exit_program(icon))
     )
@@ -181,7 +124,7 @@ def check_for_exit_or_pause_key():
             restart = True
             running = False
             tray_icon.stop()
-            exit()
+            sys.exit()
 
     keyboard.hook(on_key_event)
     while running:
@@ -212,7 +155,7 @@ class Prayer:
                     prayer_value = getPrayer()
                     if prayer_value < prayer_percent:
                         press(prayer_key[0])
-                    sleep(random.uniform(0.5, 1))
+                    sleep(random.uniform(0.3, 0.6))
                 except Exception:
                     print(f"Error in Prayer. Restarting...")
                     continue
@@ -227,7 +170,7 @@ class LifePet:
                     if pet_life_value < pet_life_percent:
                         for key in pet_life_key:
                             press(key)
-                            sleep(random.uniform(3, 0.7))
+                            sleep(random.uniform(0.3, 0.7))
                     sleep(random.uniform(0.5, 1))
                 except Exception:
                     print(f"Error in Life Pet. Restarting...")
@@ -297,8 +240,8 @@ def main_threading():
     exit_thread = Thread(target=check_for_exit_or_pause_key, args=())
     exit_thread.start()
 
-    clear_thread = Thread(target=periodic_clear_console, args=())
-    clear_thread.start()
+    # clear_thread = Thread(target=periodic_clear_console, args=())
+    # clear_thread.start()
 
     window_monitor_thread = Thread(target=monitor_window_state, args=())
     window_monitor_thread.start()
@@ -308,24 +251,22 @@ def main_threading():
     pet_thread = Thread(target=LifePet().execute, args=())
     processor_6_thread = Thread(target=UltiKeyProcessor6().run, args=())
     processor_12_thread = Thread(target=UltiKeyProcessor12().run, args=())
-    
-    time.sleep(2)
-    minimize_window()
-    tray_icon_manager()
 
     life_thread.start()
     prayer_thread.start()
     pet_thread.start()
     processor_6_thread.start()
-    time.sleep(0.4)
+    time.sleep(1)
     processor_12_thread.start()
 
     life_thread.join()
     prayer_thread.join()
     pet_thread.join()
     processor_6_thread.join()
-    time.sleep(0.4)
     processor_12_thread.join()
+
+    minimize_window()
+    tray_icon_manager()
 
     while is_runescape_running():
         time.sleep(5)

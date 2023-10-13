@@ -38,4 +38,5 @@ class UltiKeyProcessor12:
         for key in keys_to_process_12:
             thread = Thread(target=self.process_key_12, args=(key,))
             thread.start()
-            time.sleep(random.uniform(0.5)) # Aguarda um random antes de iniciar a próxima thread
+            #time.sleep(random.uniform(0.5, 1)) # Aguarda um random antes de iniciar a próxima thread
+            time.sleep(0.5)
