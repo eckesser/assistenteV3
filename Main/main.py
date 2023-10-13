@@ -21,13 +21,22 @@ from PIL import Image
 def check_and_kill_duplicate_process():
     current_pid = os.getpid()  # PID do processo atual
     for proc in psutil.process_iter(attrs=['pid', 'name', 'cmdline']):
-        if proc.info['name'] == 'python' and proc.info['pid'] != current_pid:
-            cmd_line = proc.info['cmdline']
-            if cmd_line and __file__ in cmd_line:
+        cmd_line = proc.info['cmdline']
+        if cmd_line and __file__ in cmd_line[0]:
+            # Para processos Python, verifique se é o processo atual
+            if proc.info['name'] == 'python' and proc.info['pid'] != current_pid:
                 print(f"Encerrando o processo {proc.info['pid']} com a linha de comando {cmd_line}")
                 try:
                     proc.terminate()
-                    proc.wait(timeout=3)  # Aguardar até que o processo seja terminado
+                    proc.wait(timeout=1)  # Aguardar até que o processo seja terminado
+                except psutil.NoSuchProcess:
+                    pass
+            # Para processos cmd.exe, verifique se o script atual está sendo executado
+            elif proc.info['name'] == 'cmd.exe':
+                print(f"Encerrando o processo cmd.exe com PID {proc.info['pid']} que está executando o script {__file__}")
+                try:
+                    proc.terminate()
+                    proc.wait(timeout=1)
                 except psutil.NoSuchProcess:
                     pass
 
@@ -265,8 +274,7 @@ def main_threading():
     processor_6_thread = Thread(target=UltiKeyProcessor6().run, args=())
     processor_12_thread = Thread(target=UltiKeyProcessor12().run, args=())
     
-
-    time.sleep(3)
+    time.sleep(2)
     minimize_window()
     tray_icon_manager()
 
@@ -289,10 +297,6 @@ def main_threading():
     time.sleep(3)
     exit()
 
-    # if restart:
-    #     restart = False
-    #     main_menu()
-
 def main_menu():
     while True:
         clear_console()
@@ -301,30 +305,55 @@ def main_menu():
         print("1. Configurar teclas")
         print("2. Configurar porcentagem")
         print("3. Configurar pots e magias")
-        print("4. Start")
-        print("5. Exit")
+        print("4. Exibir teclas salvas")
+        print("5. Start")
+        print("6. Exit")
         print("-------------------------")
         print("Comandos:")
         print("Botao INSERT para Pause e Resume do programa.")
         print("Botao HOME, para FECHAR o programa")
         print("-------------------------")
-        print("Quando o programa estiver executando ele minimizara so")
+        print("Quando o programa estiver executando ele ira minimizar.")
         print("-------------------------")
         choice = input("Digite a opcao desejada: ")
 
         if choice == "1":
+            clear_console()
+            print("\nConfiguracoes de teclas")
+            print("-------------------------")
+            print("\n")
             from Config.keys import KeyManager
             KeyManager()
 
         elif choice == "2":
+            clear_console()
+            print("\nConfiguracoes de das porcentagens")
+            print("-------------------------")
+            print("\n")
             from Config.perct_key import JsonSaver
             JsonSaver()
 
         elif choice == "3":
+            clear_console()
+            print("\nConfiguracoes de das teclas de porcoes e magias")
+            print("-------------------------")
+            print("\n")
             from Config.keys_pots import KeyManagerPot
             KeyManagerPot()
         
         elif choice == "4":
+            clear_console() #limpa o console antes de exibir
+            from Config.configs import JsonViewerUpdated
+            
+            viewer = JsonViewerUpdated(os.path.join(root_directory, 'Json'))
+            viewer.display_content()
+            
+            # Aguarde até que 'enter' seja pressionado
+            input("Pressione ENTER para voltar.")
+            main_menu()
+        
+        elif choice == "5":
+            clear_console()
             print("Verificando configuracoes:")
             time.sleep(0.4)
             print("Dados de teclas carregados... Ok!")
@@ -341,13 +370,12 @@ def main_menu():
                 ImageFinder()
                 print("Programa iniciado, minimizando...")
                 main_threading()
-                #print("Programa iniciado, minimizando...")
             else:
                 print("Abra o runescape... Reiniciando programa.")
                 time.sleep(2)
                 main_menu()
 
-        elif choice == "5":
+        elif choice == "6":
             global running
             running = False
             print("Fechando programa.")

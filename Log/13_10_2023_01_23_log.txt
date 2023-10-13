@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Main\main.py", line 379, in <module>
+    main_menu()
+  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Main\main.py", line 338, in main_menu
+    JsonViewerUpdated()
+TypeError: JsonViewerUpdated.__init__() missing 1 required positional argument: 'directory'
