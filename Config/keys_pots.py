@@ -22,7 +22,7 @@ class KeyManagerPot:
 
     def get_key_for(self, label):
         """Get key combination from user for a specific label."""
-        key_input = input(f"Digite a de tecla para {self.get_label(label)} (Caso use exemplo: alt+2, coloque o + para combinacao) (pressione Enter para pular): ")
+        key_input = input(f"Defina a de tecla para {self.get_label(label)} (Caso use exemplo: alt+2, coloque o +) (pressione Enter para pular): ")
         if not key_input.strip():
             return None
         return self.parse_key_combination(key_input)
