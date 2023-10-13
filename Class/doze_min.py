@@ -26,14 +26,16 @@ class UltiKeyProcessor12:
         while True:
             key_combination = self.key_data.get(key)
             if key_combination:
+                self.press_key(key_combination)
                 # Calculate random time in the last 10% of 720 seconds
                 wait_time = random.uniform(0.9 * 720, 720)
                 time.sleep(wait_time)
-                self.press_key(key_combination)
-            time.sleep(random.uniform(0.4, 1))  # intervalo entre as verificações
+            else:
+                time.sleep(random.uniform(0.4, 1))  # intervalo entre as verificações
 
     def run(self):
         keys_to_process_12 = ['necro_mage_key', 'weapon_poison_key']
         for key in keys_to_process_12:
             thread = Thread(target=self.process_key_12, args=(key,))
             thread.start()
+            time.sleep(random.uniform(0.5, 1)) # Aguarda um random antes de iniciar a próxima thread

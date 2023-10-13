@@ -19,18 +19,17 @@ from pystray import Icon as TrayIcon, MenuItem
 from PIL import Image
 
 def check_and_kill_duplicate_process():
-    current_process = psutil.Process()
-    for proc in psutil.process_iter():
-        try:
-            # Verifica se o processo atual é igual ao processo em iteração
-            if proc.pid != current_process.pid:
-                cmd_line = proc.cmdline()
-                # Verifica se o script atual está na linha de comando do processo em iteração
-                if len(cmd_line) > 1 and __file__ in cmd_line[1]:
-                    print(f"Killing process {proc.pid} with command line {cmd_line}")
-                    proc.kill()
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass
+    current_pid = os.getpid()  # PID do processo atual
+    for proc in psutil.process_iter(attrs=['pid', 'name', 'cmdline']):
+        if proc.info['name'] == 'python' and proc.info['pid'] != current_pid:
+            cmd_line = proc.info['cmdline']
+            if cmd_line and __file__ in cmd_line:
+                print(f"Encerrando o processo {proc.info['pid']} com a linha de comando {cmd_line}")
+                try:
+                    proc.terminate()
+                    proc.wait(timeout=3)  # Aguardar até que o processo seja terminado
+                except psutil.NoSuchProcess:
+                    pass
 
 check_and_kill_duplicate_process()
 
@@ -228,8 +227,9 @@ def execute_classes_in_sequence():
     try:
         ImageFinder()
         KeyManager()
-        JsonSaver()
         KeyManagerPot()
+        JsonSaver()
+
     except Exception:
         print(f"An error occurred. Restarting the sequence.")
 
@@ -265,15 +265,16 @@ def main_threading():
     processor_6_thread = Thread(target=UltiKeyProcessor6().run, args=())
     processor_12_thread = Thread(target=UltiKeyProcessor12().run, args=())
     
+
+    time.sleep(3)
+    minimize_window()
+    tray_icon_manager()
+
     life_thread.start()
     prayer_thread.start()
     pet_thread.start()
     processor_6_thread.start()
     processor_12_thread.start()
-    
-    time.sleep(3)
-    minimize_window()
-    tray_icon_manager()
 
     life_thread.join()
     prayer_thread.join()
