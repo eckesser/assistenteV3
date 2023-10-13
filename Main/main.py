@@ -282,12 +282,14 @@ def main_threading():
     prayer_thread.start()
     pet_thread.start()
     processor_6_thread.start()
+    time.sleep(1)
     processor_12_thread.start()
 
     life_thread.join()
     prayer_thread.join()
     pet_thread.join()
     processor_6_thread.join()
+    time.sleep(1)
     processor_12_thread.join()
 
     while is_runescape_running():
@@ -379,7 +381,7 @@ def main_menu():
             global running
             running = False
             print("Fechando programa.")
-            break
+            exit(0)
 
         else:
             print("Opcao invalida, escolha uma das opcoes acima.")

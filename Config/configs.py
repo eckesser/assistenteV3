@@ -41,7 +41,6 @@ class JsonViewerUpdated:
                 data = json.load(f)
                 # Use o nome exibido do arquivo aqui
                 print(f"\nConteúdo do arquivo {self.file_display_names.get(file, file)}:")
-                print("\n")
                 
                 for original_key, values in data.items():
                     display_key = self.mapping[file].get(original_key, original_key)
