@@ -1,3 +1,4 @@
+
 import psutil
 import sys
 import os
@@ -10,6 +11,7 @@ from time import sleep
 from pyautogui import press
 import keyboard
 import pygetwindow as gw
+import subprocess
 
 root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_directory)
@@ -52,6 +54,39 @@ def global_exception_handler(exc_type, exc_value, exc_traceback):
 
 sys.excepthook = global_exception_handler
 
+def restore_window():
+    windows = gw.getWindowsWithTitle('RS3 Assist')
+    if windows:
+        window = windows[0]        
+        if window.isHidden:
+            window.restore()
+        else:
+            window.activate()
+
+def restart_program(icon):
+    global running
+    running = False
+    icon.stop()
+    
+    # Reinicia o programa sem mostrar o terminal
+    startupinfo = subprocess.STARTUPINFO()
+    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    subprocess.Popen(['python', __file__], startupinfo=startupinfo)
+    
+    # Notifica o usuário sobre a reinicialização
+    try:
+        from plyer import notification
+        notification.notify(
+            title='RS3 Assist',
+            message='Reiniciado',
+            timeout=5
+        )
+    except ImportError:
+        print("Plyer not installed. Skipping notification.")
+    
+    exit(0)
+
+# Rest of the code (I'll continue in the next sections)
 from Config.rscheck import is_runescape_running
 from Class.life import getLife
 from Class.prayer import getPrayer
@@ -124,9 +159,9 @@ def tray_icon_manager():
     icon_image_green = Image.open(icon_path_green)
 
     menu = (
-        MenuItem('Open', lambda icon, item: restore_window()),
+        #MenuItem('Open', lambda icon, item: restore_window()),
         MenuItem('Pause/Resume', lambda icon, item: toggle_pause(icon)),
-        MenuItem('Restart', lambda icon, item: restart_program(icon)),
+        #MenuItem('Restart', lambda icon, item: restart_program(icon)),
         MenuItem('Suporte', lambda icon, item: open_log_directory(icon)),
         MenuItem('Exit', lambda icon, item: exit_program(icon))
     )
@@ -282,14 +317,14 @@ def main_threading():
     prayer_thread.start()
     pet_thread.start()
     processor_6_thread.start()
-    time.sleep(1)
+    time.sleep(0.4)
     processor_12_thread.start()
 
     life_thread.join()
     prayer_thread.join()
     pet_thread.join()
     processor_6_thread.join()
-    time.sleep(1)
+    time.sleep(0.4)
     processor_12_thread.join()
 
     while is_runescape_running():
@@ -316,6 +351,7 @@ def main_menu():
         print("Botao HOME, para FECHAR o programa")
         print("-------------------------")
         print("Quando o programa estiver executando ele ira minimizar.")
+        print("Deixe sempre as barras de VIDA, PRAYER e VIDA do PET amostra")
         print("-------------------------")
         choice = input("Digite a opcao desejada: ")
 
