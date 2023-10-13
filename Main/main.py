@@ -265,9 +265,6 @@ def main_threading():
     processor_6_thread.join()
     processor_12_thread.join()
 
-    minimize_window()
-    tray_icon_manager()
-
     while is_runescape_running():
         time.sleep(5)
 
@@ -348,6 +345,9 @@ def main_menu():
                 from Config.coords import ImageFinder
                 ImageFinder()
                 print("Programa iniciado, minimizando...")
+                time.sleep(1)
+                minimize_window()
+                tray_icon_manager()
                 main_threading()
             else:
                 print("Abra o runescape... Reiniciando programa.")
