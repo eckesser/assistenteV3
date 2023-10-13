@@ -7,7 +7,6 @@ import traceback
 import keyboard
 import pygetwindow as gw
 import random
-import threading
 
 from threading import Thread
 from time import sleep
@@ -256,7 +255,7 @@ def main_threading():
     prayer_thread.start()
     pet_thread.start()
     processor_6_thread.start()
-    time.sleep(1)
+    time.sleep(0.2)
     processor_12_thread.start()
 
     life_thread.join()
@@ -265,10 +264,11 @@ def main_threading():
     processor_6_thread.join()
     processor_12_thread.join()
 
-    while is_runescape_running():
-        time.sleep(5)
+    minimize_window()
+    tray_icon_manager()
 
-    print("Jogo Fechado, fechando assistente...")
+    while is_runescape_running():
+        time.sleep(1)
     time.sleep(3)
     exit()
 
@@ -330,6 +330,8 @@ def main_menu():
         
         elif choice == "5":
             clear_console()
+            tray_icon_thread = Thread(target=tray_icon_manager)
+            tray_icon_thread.start()
             print("Verificando configuracoes:")
             time.sleep(0.4)
             print("Dados de teclas carregados... Ok!")
@@ -345,10 +347,13 @@ def main_menu():
                 from Config.coords import ImageFinder
                 ImageFinder()
                 print("Programa iniciado, minimizando...")
-                time.sleep(1)
                 minimize_window()
-                tray_icon_manager()
+                windows = gw.getWindowsWithTitle('RuneScape')
+                if windows:
+                    windows[0].activate()
+                time.sleep(1)
                 main_threading()
+
             else:
                 print("Abra o runescape... Reiniciando programa.")
                 time.sleep(2)
