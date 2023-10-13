@@ -34,7 +34,7 @@ class UltiKeyProcessor6:
                 time.sleep(random.uniform(0.4, 1))  # intervalo entre as verificações
 
     def run(self):
-        keys_to_process_6 = ['ovl_key', 'anti_fire_key', 'anti_poison_key']
+        keys_to_process_6 = ['ovl_key', 'anti_fire_key', 'anti_poison_key', 'aggression_key']
         for key in keys_to_process_6:
             thread = Thread(target=self.process_key_6, args=(key,))
             thread.start()

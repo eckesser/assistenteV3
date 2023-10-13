@@ -8,6 +8,7 @@ class KeyManagerPot:
             'ovl_key': 'Overload',
             'anti_fire_key': 'Anti-fire',
             'anti_poison_key': 'Anti-Poison',
+            'aggression_key': 'Aggression potion',
             'weapon_poison_key': 'Weapon poison',
             'necro_mage_key': 'Darkness ou Animate Dead'
         }
