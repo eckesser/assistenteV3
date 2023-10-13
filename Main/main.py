@@ -48,6 +48,9 @@ from Config.rscheck import is_runescape_running
 from Class.life import getLife
 from Class.prayer import getPrayer
 from Class.life_pet import getPet_life
+from Class.seis_min import UltiKeyProcessor6
+from Class.doze_min import UltiKeyProcessor12
+
 
 life_key = ['']
 life_percent = 1
@@ -220,11 +223,13 @@ def execute_classes_in_sequence():
     from Config.coords import ImageFinder
     from Config.perct_key import JsonSaver
     from Config.keys import KeyManager
+    from Config.keys_pots import KeyManagerPot
 
     try:
         ImageFinder()
         KeyManager()
         JsonSaver()
+        KeyManagerPot()
     except Exception:
         print(f"An error occurred. Restarting the sequence.")
 
@@ -257,11 +262,15 @@ def main_threading():
     life_thread = Thread(target=Life().execute, args=())
     prayer_thread = Thread(target=Prayer().execute, args=())
     pet_thread = Thread(target=LifePet().execute, args=())
+    processor_6_thread = Thread(target=UltiKeyProcessor6().run, args=())
+    processor_12_thread = Thread(target=UltiKeyProcessor12().run, args=())
     
     life_thread.start()
     prayer_thread.start()
     pet_thread.start()
-
+    processor_6_thread.start()
+    processor_12_thread.start()
+    
     time.sleep(3)
     minimize_window()
     tray_icon_manager()
@@ -269,6 +278,8 @@ def main_threading():
     life_thread.join()
     prayer_thread.join()
     pet_thread.join()
+    processor_6_thread.join()
+    processor_12_thread.join()
 
     while is_runescape_running():
         time.sleep(5)
@@ -277,9 +288,9 @@ def main_threading():
     time.sleep(3)
     exit()
 
-    if restart:
-        restart = False
-        main_menu()
+    # if restart:
+    #     restart = False
+    #     main_menu()
 
 def main_menu():
     while True:
@@ -288,8 +299,9 @@ def main_menu():
         print("-------------------------")
         print("1. Configurar teclas")
         print("2. Configurar porcentagem")
-        print("3. Start")
-        print("4. Exit")
+        print("3. Configurar pots e magias")
+        print("4. Start")
+        print("5. Exit")
         print("-------------------------")
         print("Comandos:")
         print("Botao INSERT para Pause e Resume do programa.")
@@ -308,11 +320,17 @@ def main_menu():
             JsonSaver()
 
         elif choice == "3":
+            from Config.keys_pots import KeyManagerPot
+            KeyManagerPot()
+        
+        elif choice == "4":
             print("Verificando configuracoes:")
             time.sleep(0.4)
             print("Dados de teclas carregados... Ok!")
             time.sleep(0.4)
             print("Dados de porcentagem carregado... Ok!")
+            time.sleep(0.4)
+            print("Dados das teclas de pot carregado... Ok!")
             time.sleep(0.4)
             print("Verificando se Runescape...")
             time.sleep(0.4)
@@ -328,7 +346,7 @@ def main_menu():
                 time.sleep(2)
                 main_menu()
 
-        elif choice == "4":
+        elif choice == "5":
             global running
             running = False
             print("Fechando programa.")

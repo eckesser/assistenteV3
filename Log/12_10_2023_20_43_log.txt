@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Main\main.py", line 357, in <module>
+    main_menu()
+  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Main\main.py", line 340, in main_menu
+    main_threading()
+  File "C:\Users\Eck\Desktop\Projetos\assistenteV3\Main\main.py", line 279, in main_threading
+    processor_6_thread.join()
+  File "C:\Users\Eck\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1107, in join
+    raise RuntimeError("cannot join thread before it is started")
+RuntimeError: cannot join thread before it is started
