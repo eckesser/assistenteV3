@@ -6,10 +6,7 @@
     "anti_fire_key": null,
     "anti_poison_key": null,
     "aggression_key": null,
-    "weapon_poison_key": [
-        "alt",
-        "4"
-    ],
+    "weapon_poison_key": null,
     "necro_mage_key": [
         "alt",
         "q"

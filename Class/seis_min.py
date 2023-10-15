@@ -6,9 +6,13 @@ from threading import Thread
 
 class UltiKeyProcessor6:
 
-    def __init__(self, json_path="Json/ulti.json"):
-        with open(json_path, 'r') as f:
-            self.key_data = json.load(f)
+    def __init__(self, ovl=None, anti_fire=None, anti_poison=None, aggression=None):
+        self.key_data = {
+            'ovl': ovl,
+            'anti_fire': anti_fire,
+            'anti_poison': anti_poison,
+            'aggression': aggression
+        }
 
     def press_key(self, key_combination):
         """Simulate simultaneous key press using pyautogui."""
@@ -27,16 +31,15 @@ class UltiKeyProcessor6:
             key_combination = self.key_data.get(key)
             if key_combination:
                 self.press_key(key_combination)
-                # Calculate random time in the last 10% of 720 seconds
+                # Calculate random time in the last 10% of 360 seconds
                 wait_time = random.uniform(0.9 * 360, 360)
                 time.sleep(wait_time)
             else:
                 time.sleep(random.uniform(0.4, 1))  # intervalo entre as verificações
 
     def run(self):
-        keys_to_process_6 = ['ovl_key', 'anti_fire_key', 'anti_poison_key', 'aggression_key']
+        keys_to_process_6 = ['ovl', 'anti_fire', 'anti_poison', 'aggression']
         for key in keys_to_process_6:
             thread = Thread(target=self.process_key_6, args=(key,))
             thread.start()
-            #time.sleep(random.uniform(0.3, 0.6)) # Aguarda um random antes de iniciar a próxima thread
-            time.sleep(0.8)
+            time.sleep(0.5)  # Aguarda um tempo antes de iniciar a próxima thread

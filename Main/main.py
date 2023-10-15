@@ -43,6 +43,12 @@ prayer_key = ['']
 prayer_percent = 1
 pet_life_key = ['']
 pet_life_percent = 1
+ovl = None
+anti_fire = None
+anti_poison = None
+aggression = None
+weapon_poison = None
+necro_mage = None
 
 running = True
 paused = False
@@ -123,11 +129,12 @@ def check_for_exit_or_pause_key():
             restart = True
             running = False
             tray_icon.stop()
-            sys.exit()
+            exit()
 
     keyboard.hook(on_key_event)
     while running:
         time.sleep(0.1)
+
         
 class Life:
     def execute(self):
@@ -192,6 +199,18 @@ def load_config_from_json():
     prayer_percent = percent_config.get('prayer_percent', prayer_percent)
     pet_life_percent = percent_config.get('pet_life_percent', pet_life_percent)
 
+
+    with open(os.path.join(root_directory, 'Json', 'ulti.json'), 'r') as file:
+        ulti_config = json.load(file)
+
+    global ovl, anti_fire, anti_poison, aggression, weapon_poison, necro_mage
+    ovl = ulti_config.get('ovl_key', ovl)
+    anti_fire = ulti_config.get('anti_fire_key', anti_fire)
+    anti_poison = ulti_config.get('anti_poison_key', anti_poison)
+    aggression = ulti_config.get ('angression_key', aggression)
+    weapon_poison = ulti_config.get('weapon_poison_key', weapon_poison)
+    necro_mage = ulti_config.get('necro_mage_key', necro_mage)
+
 def execute_classes_in_sequence():
     retry_count = 0
     while not is_runescape_running() and retry_count < 3:
@@ -236,11 +255,22 @@ def clear_console():
 
 def main_threading():
     global restart
+    
+    # Carregando as configurações
+    load_config_from_json()
+
+    # Iniciar as threads de processamento de teclas
+    processor_6 = UltiKeyProcessor6(ovl, anti_fire, anti_poison, aggression)
+    processor_12 = UltiKeyProcessor12(weapon_poison, necro_mage)
+    
+    processor_6_thread = Thread(target=processor_6.process_key_6, args=())  # Supondo que a função seja process_key_6
+    processor_12_thread = Thread(target=processor_12.process_key_12, args=())  # Supondo que a função seja process_key_12
+    
+    processor_6_thread.start()
+    processor_12_thread.start()
+
     exit_thread = Thread(target=check_for_exit_or_pause_key, args=())
     exit_thread.start()
-
-    # clear_thread = Thread(target=periodic_clear_console, args=())
-    # clear_thread.start()
 
     window_monitor_thread = Thread(target=monitor_window_state, args=())
     window_monitor_thread.start()
@@ -248,16 +278,12 @@ def main_threading():
     life_thread = Thread(target=Life().execute, args=())
     prayer_thread = Thread(target=Prayer().execute, args=())
     pet_thread = Thread(target=LifePet().execute, args=())
-    processor_6_thread = Thread(target=UltiKeyProcessor6().run, args=())
-    processor_12_thread = Thread(target=UltiKeyProcessor12().run, args=())
 
     life_thread.start()
     prayer_thread.start()
     pet_thread.start()
-    processor_6_thread.start()
-    time.sleep(0.2)
-    processor_12_thread.start()
 
+    # Aguarde todas as threads terminarem
     life_thread.join()
     prayer_thread.join()
     pet_thread.join()
@@ -265,7 +291,7 @@ def main_threading():
     processor_12_thread.join()
 
     minimize_window()
-    tray_icon_manager()
+    #tray_icon_manager()
 
     while is_runescape_running():
         time.sleep(1)

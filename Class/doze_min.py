@@ -6,9 +6,11 @@ from threading import Thread
 
 class UltiKeyProcessor12:
 
-    def __init__(self, json_path="Json/ulti.json"):
-        with open(json_path, 'r') as f:
-            self.key_data = json.load(f)
+    def __init__(self, weapon_poison=None, necro_mage=None):
+        self.key_data = {
+            'weapon_poison': weapon_poison,
+            'necro_mage': necro_mage
+        }
 
     def press_key(self, key_combination):
         """Simulate simultaneous key press using pyautogui."""
@@ -34,9 +36,8 @@ class UltiKeyProcessor12:
                 time.sleep(random.uniform(0.4, 1))  # intervalo entre as verificações
 
     def run(self):
-        keys_to_process_12 = ['necro_mage_key', 'weapon_poison_key']
+        keys_to_process_12 = ['necro_mage', 'weapon_poison']
         for key in keys_to_process_12:
             thread = Thread(target=self.process_key_12, args=(key,))
             thread.start()
-            #time.sleep(random.uniform(0.5, 1)) # Aguarda um random antes de iniciar a próxima thread
             time.sleep(0.5)
