@@ -1,3 +1,4 @@
+
 import sys
 import os
 import time
@@ -181,19 +182,6 @@ class LifePet:
                     print(f"Error in Life Pet. Restarting...")
                     continue
 
-class PotProcessor:
-    def __init__(self, key, config, processor, delay_minutes):
-        self.key = key
-        self.config = config
-        self.processor = processor
-        self.delay_seconds = delay_minutes * 60
-
-    def process(self):
-        if self.key in self.config:
-            self.processor.press_key(self.config[self.key])
-            time.sleep(self.delay_seconds)
-
-
 def load_config_from_json():
     with open(os.path.join(root_directory, 'Json', 'teclas.json'), 'r') as file:
         teclas_config = json.load(file)
@@ -211,26 +199,17 @@ def load_config_from_json():
     prayer_percent = percent_config.get('prayer_percent', prayer_percent)
     pet_life_percent = percent_config.get('pet_life_percent', pet_life_percent)
 
+
     with open(os.path.join(root_directory, 'Json', 'ulti.json'), 'r') as file:
         ulti_config = json.load(file)
 
-    processor_6 = UltiKeyProcessor6()
-    processor_12 = UltiKeyProcessor12()
-
-    # Cria uma lista de chaves de configuração, suas respectivas instâncias de processadores e tempos de espera
-    keys_processors_and_delays = [
-        ('ovl_key', processor_6, 6),
-        ('anti_fire_key', processor_6, 6),
-        ('anti_poison_key', processor_6, 6),
-        ('aggression_key', processor_6, 6),
-        ('weapon_poison_key', processor_12, 12),
-        ('necro_mage_key', processor_12, 12)
-    ]
-
-    # Itera através de cada chave, processador e tempo de espera, criando uma instância de PotProcessor e chamando seu método process
-    for key, processor, delay in keys_processors_and_delays:
-        instance = PotProcessor(key, ulti_config, processor, delay)
-        instance.process()
+    global ovl, anti_fire, anti_poison, aggression, weapon_poison, necro_mage
+    ovl = ulti_config.get('ovl_key', ovl)
+    anti_fire = ulti_config.get('anti_fire_key', anti_fire)
+    anti_poison = ulti_config.get('anti_poison_key', anti_poison)
+    aggression = ulti_config.get ('angression_key', aggression)
+    weapon_poison = ulti_config.get('weapon_poison_key', weapon_poison)
+    necro_mage = ulti_config.get('necro_mage_key', necro_mage)
 
 def execute_classes_in_sequence():
     retry_count = 0
@@ -274,60 +253,45 @@ def periodic_clear_console():
 def clear_console():
     print('\033c')
 
-from Class.KeyPresser import KeyPresser
-
-def keypress_thread(key, config, delay_seconds):
-    while running:
-        instance = KeyPresser(key, config)
-        instance.press()
-        sleep(delay_seconds)
-
 def main_threading():
+    global restart
+    
     # Carregando as configurações
     load_config_from_json()
 
-    with open(os.path.join(root_directory, 'Json', 'ulti.json'), 'r') as file:
-        ulti_config = json.load(file)
+    # Iniciar as threads de processamento de teclas
+    processor_6 = UltiKeyProcessor6(ovl, anti_fire, anti_poison, aggression)
+    processor_12 = UltiKeyProcessor12(weapon_poison, necro_mage)
+    
+    processor_6_thread = Thread(target=processor_6.process_key_6, args=())  # Supondo que a função seja process_key_6
+    processor_12_thread = Thread(target=processor_12.process_key_12, args=())  # Supondo que a função seja process_key_12
+    
+    processor_6_thread.start()
+    processor_12_thread.start()
 
-    keys_processors_and_delays = [
-        ('ovl_key', 6 * 60),
-        ('anti_fire_key', 6 * 60),
-        ('anti_poison_key', 6 * 60),
-        ('aggression_key', 6 * 60),
-        ('weapon_poison_key', 12 * 60),
-        ('necro_mage_key', 12 * 60)
-    ]
-
-    threads = []
-    for key, delay in keys_processors_and_delays:
-        t = Thread(target=keypress_thread, args=(key, ulti_config, delay))
-        t.start()
-        threads.append(t)
-
-    # Iniciar outras threads que já estavam no seu código
-    exit_thread = Thread(target=check_for_exit_or_pause_key)
+    exit_thread = Thread(target=check_for_exit_or_pause_key, args=())
     exit_thread.start()
 
-    window_monitor_thread = Thread(target=monitor_window_state)
+    window_monitor_thread = Thread(target=monitor_window_state, args=())
     window_monitor_thread.start()
 
-    life_thread = Thread(target=Life().execute)
-    prayer_thread = Thread(target=Prayer().execute)
-    pet_thread = Thread(target=LifePet().execute)
+    life_thread = Thread(target=Life().execute, args=())
+    prayer_thread = Thread(target=Prayer().execute, args=())
+    pet_thread = Thread(target=LifePet().execute, args=())
 
     life_thread.start()
     prayer_thread.start()
     pet_thread.start()
 
     # Aguarde todas as threads terminarem
-    for t in threads:
-        t.join()
-
     life_thread.join()
     prayer_thread.join()
     pet_thread.join()
+    processor_6_thread.join()
+    processor_12_thread.join()
 
     minimize_window()
+    #tray_icon_manager()
 
     while is_runescape_running():
         time.sleep(1)
