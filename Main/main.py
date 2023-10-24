@@ -6,6 +6,7 @@ import sys
 import time
 import traceback
 import random
+import psutil
 
 root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_directory)
@@ -71,10 +72,24 @@ def monitor_window_state():
             windows[0].hide()
         time.sleep(0.5)
 
+# def kill_processes():
+#     os.system('taskkill /F /IM conhost.exe')
+#     os.system('taskkill /F /IM cmd.exe')
+
+def kill_processes():
+    for process in psutil.process_iter():
+        try:
+            process_name = process.name().lower()
+            if process_name == "conhost.exe" or process_name == "cmd.exe":
+                process.terminate()
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+
 def exit_program(icon):
     global running
     running = False
     icon.stop()
+    kill_processes()
     sys.exit(0)
 
 def tray_icon_manager():
@@ -93,9 +108,7 @@ def tray_icon_manager():
 
 def toggle_pause(icon):
     global paused, tray_icon
-    print(f"Toggle pause chamado. Estado anterior: {paused}")  # Mensagem de diagnóstico
     paused = not paused
-    print(f"Novo estado: {paused}")  # Mensagem de diagnóstico
     if paused:
         tray_icon.icon = Image.open(os.path.join(root_directory, 'Icon', 'red.png'))
     else:
@@ -104,19 +117,16 @@ def toggle_pause(icon):
 
 def check_for_exit_or_pause_key():
     global running, paused, restart, tray_icon
-
     def on_key_event(e):
         global running, paused, restart, tray_icon
-        if e.name == 'END' and e.event_type == 'down':
-            print("Tecla END pressionada!")  # Mensagem de diagnóstico
+        if e.name == 'end' and e.event_type == 'down':
             toggle_pause(tray_icon)
         elif e.name == 'f12' and e.event_type == 'down':
-            print("Tecla f12 detectada!")  # Mensagem de diagnóstico
             restart = True
             running = False
             tray_icon.stop()
+            kill_processes()
             exit()
-
     keyboard.hook(on_key_event)
     while running:
         time.sleep(0.1)
@@ -140,13 +150,11 @@ class Base:
                 except Exception as e:
                     print(f"Error in {self.__class__.__name__}: {e}. Restarting...")
                     continue
-
     def action(self):
         raise NotImplementedError
 
 class Life(Base):
     def action(self):
-        print("Life Iniciada")
         for key in self.keys:
             delay_ms = random.randint(300, 758)
             time.sleep(delay_ms / 1000)
@@ -155,7 +163,6 @@ class Life(Base):
 
 class Prayer(Base):
     def action(self):
-        print("Prayer Iniciada")
         for key in self.keys:
             delay_ms = random.randint(300, 758)
             time.sleep(delay_ms / 1000)
@@ -164,7 +171,6 @@ class Prayer(Base):
 
 class LifePet(Base):
     def action(self):
-        print("LifePet Iniciada")
         for key in self.keys:
             delay_ms = random.randint(300, 758)
             time.sleep(delay_ms / 1000)
@@ -217,17 +223,14 @@ def clear_console():
     print('\033c')
 
 def main_threading():
-    # Carregando as configurações
     load_config_from_json()
 
-    # Iniciar outras threads que já estavam no seu código
     exit_thread = Thread(target=check_for_exit_or_pause_key)
     exit_thread.start()
     
     window_monitor_thread = Thread(target=monitor_window_state)
     window_monitor_thread.start()
 
-    # Aqui estamos instanciando as classes usando as funções e as variáveis globais
     life = Life(getLife, life_percent, life_key)
     prayer = Prayer(getPrayer, prayer_percent, prayer_key)
     pet_life = LifePet(getPet_life, pet_life_percent, pet_life_key)
@@ -236,9 +239,13 @@ def main_threading():
     prayer_thread = Thread(target=prayer.execute)
     pet_thread = Thread(target=pet_life.execute)
 
+
     life_thread.start()
+    print("Life Iniciada")
     prayer_thread.start()
+    print("Prayer Iniciada")
     pet_thread.start()
+    print("Life Pet Iniciada")
 
     #minimize_window()
     while is_runescape_running():
@@ -253,16 +260,16 @@ def main_menu():
         print("-------------------------")
         print("1. Configurar teclas")
         print("2. Configurar porcentagem")
-        print("3. Configurar pots e magias")
+        print("3. Configurar pots e magias (FUTURA IMPLEMENTACAO)")
         print("4. Exibir teclas salvas")
         print("5. Start")
         print("6. Exit")
         print("-------------------------")
         print("Comandos:")
         print("Botao END para Pause e Resume do programa.")
-        #print("Botao END, para FECHAR o programa")
+        print("Botao F12, para FECHAR o programa")
         print("-------------------------")
-        print("Quando o programa estiver executando ele ira minimizar.")
+        #print("Quando o programa estiver executando ele ira minimizar.")
         print("Deixe sempre as barras de VIDA, PRAYER e VIDA do PET amostra")
         print("-------------------------")
         choice = input("Digite a opcao desejada: ")
@@ -292,7 +299,6 @@ def main_menu():
             from Config.configs import JsonViewerUpdated
             viewer = JsonViewerUpdated(os.path.join(root_directory, 'Json'))
             viewer.display_content()
-            # Aguarde até que 'enter' seja pressionado
             input("Pressione ENTER para voltar.")
             main_menu()
         elif choice == "5":
