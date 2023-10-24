@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "C:\Users\Erick\Desktop\Projetos\assistenteV3\Main\main.py", line 337, in <module>
+    main_menu()
+  File "C:\Users\Erick\Desktop\Projetos\assistenteV3\Main\main.py", line 275, in main_menu
+    from Config.keys import KeyManager
+  File "C:\Users\Erick\Desktop\Projetos\assistenteV3\Config\keys.py", line 64, in <module>
+    manager.run()
+  File "C:\Users\Erick\Desktop\Projetos\assistenteV3\Config\keys.py", line 53, in run
+    data['life_key'] = self.get_keys_for('life_key', num_life_keys)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Erick\Desktop\Projetos\assistenteV3\Config\keys.py", line 22, in get_keys_for
+    key = input(f"Digite uma tecla para {self.get_label(label)} ({len(keys)+1}/{max_keys}): ")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

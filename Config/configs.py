@@ -24,6 +24,7 @@ class JsonViewerUpdated:
                 "ovl_key": "Overload potion",
                 "anti_fire_key": "Antifire potion",
                 "anti_poison_key": "Antipoison",
+                "aggression_key": "Aggression",
                 "weapon_poison_key": "Weapon poison potion",
                 "necro_mage_key": "Darkness ou Animate Dead"
             }

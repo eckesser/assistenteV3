@@ -2,10 +2,10 @@ import json
 import keyboard
 import os
 import pygetwindow as gw
-import random
 import sys
 import time
 import traceback
+import random
 
 root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_directory)
@@ -28,7 +28,6 @@ from PIL import Image
 from pyautogui import press
 from pystray import Icon as TrayIcon, MenuItem
 from threading import Thread
-from time import sleep
 
 life_key = ['']
 life_percent = 1
@@ -78,15 +77,6 @@ def exit_program(icon):
     icon.stop()
     sys.exit(0)
 
-def toggle_pause(icon):
-    global paused, tray_icon
-    paused = not paused
-    if paused:
-        tray_icon.icon = Image.open(os.path.join(root_directory, 'Icon', 'red.png'))
-    else:
-        tray_icon.icon = Image.open(os.path.join(root_directory, 'Icon', 'green.png'))
-    tray_icon.update_menu()
-
 def tray_icon_manager():
     global paused, tray_icon
     icon_path_green = os.path.join(root_directory, 'Icon', 'green.png')
@@ -101,66 +91,85 @@ def tray_icon_manager():
     tray_icon = TrayIcon("RS3 Assist", icon_image_green, "RS3 Assist", menu)
     tray_icon.run()
 
+def toggle_pause(icon):
+    global paused, tray_icon
+    print(f"Toggle pause chamado. Estado anterior: {paused}")  # Mensagem de diagnóstico
+    paused = not paused
+    print(f"Novo estado: {paused}")  # Mensagem de diagnóstico
+    if paused:
+        tray_icon.icon = Image.open(os.path.join(root_directory, 'Icon', 'red.png'))
+    else:
+        tray_icon.icon = Image.open(os.path.join(root_directory, 'Icon', 'green.png'))
+    tray_icon.update_menu()
+
 def check_for_exit_or_pause_key():
     global running, paused, restart, tray_icon
+
     def on_key_event(e):
         global running, paused, restart, tray_icon
-        if e.name == 'insert' and e.event_type == 'down':
+        if e.name == 'END' and e.event_type == 'down':
+            print("Tecla END pressionada!")  # Mensagem de diagnóstico
             toggle_pause(tray_icon)
-        elif e.name == 'home' and e.event_type == 'down':
+        elif e.name == 'f12' and e.event_type == 'down':
+            print("Tecla f12 detectada!")  # Mensagem de diagnóstico
             restart = True
             running = False
             tray_icon.stop()
             exit()
+
     keyboard.hook(on_key_event)
     while running:
         time.sleep(0.1)
 
-class Life:
+class Base:
+    def __init__(self, getter, threshold_percent, keys=None):
+        self.getter = getter
+        self.threshold_percent = threshold_percent
+        self.keys = keys
+
     def execute(self):
         while running:
             if not paused:
                 try:
-                    load_config_from_json()
-                    life_value = getLife()
-                    if life_value < life_percent:
-                        for key in life_key:
-                            press(key)
-                            sleep(0.5)
-                    sleep(0.5)
-                except Exception:
-                    print(f"Error in Life. Restarting...")
+                    value = self.getter()
+                    if value > 100:
+                        continue
+                    if value <= self.threshold_percent:
+                        self.action()
+                    time.sleep(0.5)
+                except Exception as e:
+                    print(f"Error in {self.__class__.__name__}: {e}. Restarting...")
                     continue
 
-class Prayer:
-    def execute(self):
-        while running:
-            if not paused:
-                try:
-                    load_config_from_json()
-                    prayer_value = getPrayer()
-                    if prayer_value < prayer_percent:
-                        press(prayer_key[0])
-                    sleep(0.5)
-                except Exception:
-                    print(f"Error in Prayer. Restarting...")
-                    continue
+    def action(self):
+        raise NotImplementedError
 
-class LifePet:
-    def execute(self):
-        while running:
-            if not paused:
-                try:
-                    load_config_from_json()
-                    pet_life_value = getPet_life()
-                    if pet_life_value < pet_life_percent:
-                        for key in pet_life_key:
-                            press(key)
-                            sleep(random.uniform(0.3, 0.7))
-                    sleep(0.5)
-                except Exception:
-                    print(f"Error in Life Pet. Restarting...")
-                    continue
+class Life(Base):
+    def action(self):
+        print("Life Iniciada")
+        for key in self.keys:
+            delay_ms = random.randint(300, 758)
+            time.sleep(delay_ms / 1000)
+            press(key)
+            print("Life Press")
+
+class Prayer(Base):
+    def action(self):
+        print("Prayer Iniciada")
+        for key in self.keys:
+            delay_ms = random.randint(300, 758)
+            time.sleep(delay_ms / 1000)
+            press(key)
+        print("Prayer Press")
+
+class LifePet(Base):
+    def action(self):
+        print("LifePet Iniciada")
+        for key in self.keys:
+            delay_ms = random.randint(300, 758)
+            time.sleep(delay_ms / 1000)
+            press(key)
+            print("LifePet press")
 
 def load_config_from_json():
     with open(os.path.join(root_directory, 'Json', 'teclas.json'), 'r') as file:
@@ -190,11 +199,9 @@ def execute_classes_in_sequence():
     from Config.coords import ImageFinder
     from Config.perct_key import JsonSaver
     from Config.keys import KeyManager
-    from Config.keys_pots import KeyManagerPot
     try:
         ImageFinder()
         KeyManager()
-        KeyManagerPot()
         JsonSaver()
     except Exception:
         print(f"An error occurred. Restarting the sequence.")
@@ -204,68 +211,14 @@ def monitor_window_state():
         windows = gw.getWindowsWithTitle('RS3 Assist')
         if windows and windows[0].isMinimized:
             windows[0].hide()
-        time.sleep(0.5)
-
-def periodic_clear_console():
-    while running:
-        time.sleep(20)
-        clear_console()
+        time.sleep(1)
 
 def clear_console():
     print('\033c')
 
-def keypress_thread(key, config, delay_seconds):
-    while running:
-        instance = KeyPresser(key, config)
-        instance.press()
-        sleep(delay_seconds)
-
-# Function that runs in a thread
-def keypress_thread(key_presser, delay):
-    while running:
-        if not paused and key_presser.tecla_config:
-            key_presser.press()
-            sleep(delay)
-
-from random import uniform
-
-def add_random_time(base_time):
-    random_factor = base_time * 0.1
-    return base_time - uniform(0, random_factor)
-
-# Function to load from JSON and start threads
-def load_config_and_start_threads():
-    with open(os.path.join(root_directory, 'Json', 'ulti.json'), 'r') as file:
-        ulti_config = json.load(file)
-    
-    ovl = KeyPresser("ovl_key", ulti_config)
-    anti_fire = KeyPresser("anti_fire_key", ulti_config)
-    anti_poison = KeyPresser("anti_poison_key", ulti_config)
-    aggression = KeyPresser("aggression_key", ulti_config)
-    weapon_poison = KeyPresser("weapon_poison_key", ulti_config)
-    necro_mage = KeyPresser("necro_mage_key", ulti_config)
-    
-    key_pressers_and_delays = [
-        (ovl, add_random_time(6 * 60)),          # 6 minutos
-        (anti_fire, add_random_time(6 * 60)),    # 6 minutos
-        (anti_poison, add_random_time(6 * 60)),  # 6 minutos
-        (aggression, add_random_time(6 * 60)),   # 6 minutos
-        (weapon_poison, add_random_time(12 * 60)), # 12 minutos
-        (necro_mage, add_random_time(12 * 60))    # 12 minutos
-    ]
-    
-    # Starting threads for non-null keys
-    for key_presser, delay in key_pressers_and_delays:
-        t = Thread(target=keypress_thread, args=(key_presser, delay))
-        t.start()
-        sleep(0.5)
-
 def main_threading():
     # Carregando as configurações
     load_config_from_json()
-
-    # Iniciar threads para pressionar teclas baseadas em ulti.json
-    load_config_and_start_threads()
 
     # Iniciar outras threads que já estavam no seu código
     exit_thread = Thread(target=check_for_exit_or_pause_key)
@@ -274,19 +227,20 @@ def main_threading():
     window_monitor_thread = Thread(target=monitor_window_state)
     window_monitor_thread.start()
 
-    life_thread = Thread(target=Life().execute)
-    prayer_thread = Thread(target=Prayer().execute)
-    pet_thread = Thread(target=LifePet().execute)
+    # Aqui estamos instanciando as classes usando as funções e as variáveis globais
+    life = Life(getLife, life_percent, life_key)
+    prayer = Prayer(getPrayer, prayer_percent, prayer_key)
+    pet_life = LifePet(getPet_life, pet_life_percent, pet_life_key)
+
+    life_thread = Thread(target=life.execute)
+    prayer_thread = Thread(target=prayer.execute)
+    pet_thread = Thread(target=pet_life.execute)
 
     life_thread.start()
     prayer_thread.start()
     pet_thread.start()
 
-    life_thread.join()
-    prayer_thread.join()
-    pet_thread.join()
-
-    minimize_window()
+    #minimize_window()
     while is_runescape_running():
         time.sleep(1)
     time.sleep(3)
@@ -305,8 +259,8 @@ def main_menu():
         print("6. Exit")
         print("-------------------------")
         print("Comandos:")
-        print("Botao INSERT para Pause e Resume do programa.")
-        print("Botao HOME, para FECHAR o programa")
+        print("Botao END para Pause e Resume do programa.")
+        #print("Botao END, para FECHAR o programa")
         print("-------------------------")
         print("Quando o programa estiver executando ele ira minimizar.")
         print("Deixe sempre as barras de VIDA, PRAYER e VIDA do PET amostra")
@@ -328,11 +282,11 @@ def main_menu():
             JsonSaver()
         elif choice == "3":
             clear_console()
-            print("\nConfiguracoes de das teclas de porcoes e magias")
-            print("-------------------------")
-            print("\n")
-            from Config.keys_pots import KeyManagerPot
-            KeyManagerPot()
+            # print("\nConfiguracoes de das teclas de porcoes e magias")
+            # print("-------------------------")
+            # print("\n")
+            # from Config.keys_pots import KeyManagerPot
+            # KeyManagerPot()
         elif choice == "4":
             clear_console() #limpa o console antes de exibir
             from Config.configs import JsonViewerUpdated
@@ -359,8 +313,8 @@ def main_menu():
                 print("Runescape aberto.")
                 from Config.coords import ImageFinder
                 ImageFinder()
-                print("Programa iniciado, minimizando...")
-                minimize_window()
+                # print("Programa iniciado, minimizando...")
+                # minimize_window()
                 windows = gw.getWindowsWithTitle('RuneScape')
                 if windows:
                     windows[0].activate()
@@ -377,5 +331,6 @@ def main_menu():
             exit(0)
         else:
             print("Opcao invalida, escolha uma das opcoes acima.")
+
 if __name__ == "__main__":
     main_menu()
