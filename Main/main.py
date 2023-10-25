@@ -31,7 +31,7 @@ from pyautogui import press
 from pystray import Icon as TrayIcon, MenuItem
 from threading import Thread
 from Main.main_menu import main_menu
-from Class.shared import running, paused, restart
+from Class.shared import running, paused, restart, kill_processes
 
 life_key = ['']
 life_percent = 1
@@ -72,14 +72,14 @@ def monitor_window_state():
             windows[0].hide()
         time.sleep(0.5)
 
-def kill_processes():
-    for process in psutil.process_iter():
-        try:
-            process_name = process.name().lower()
-            if process_name == "conhost.exe" or process_name == "cmd.exe":
-                process.terminate()
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass
+# def kill_processes():
+#     for process in psutil.process_iter():
+#         try:
+#             process_name = process.name().lower()
+#             if process_name == "conhost.exe" or process_name == "cmd.exe":
+#                 process.terminate()
+#         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+#             pass
 
 def exit_program(icon):
     global running

@@ -4,8 +4,9 @@
         "f6",
         "2"
     ],
-    "prayer_key": [
-        "tab"
-    ],
-    "pet_life_key": null
+    "prayer_key": null,
+    "pet_life_key": [
+        "3",
+        "4"
+    ]
 }

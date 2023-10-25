@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "C:\Users\Erick\Desktop\Projetos\assistenteV3\Main\main.py", line 226, in <module>
+    main_menu(main_threading, tray_icon_manager)
+  File "C:\Users\Erick\Desktop\Projetos\assistenteV3\Main\main_menu.py", line 32, in main_menu
+    choice = input("Digite a opcao desejada: ")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [WinError 233] Não há processo no outro extremo do pipe
