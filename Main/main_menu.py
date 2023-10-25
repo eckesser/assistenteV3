@@ -72,9 +72,9 @@ def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
                 print("Runescape aberto.")
                 from Config.coords import ImageFinder
                 ImageFinder()
-                windows = gw.getWindowsWithTitle('RuneScape')
-                if windows:
-                    windows[0].activate()
+                # windows = gw.getWindowsWithTitle('RuneScape')
+                # if windows:
+                #     windows[0].activate()
                 time.sleep(1)
                 if main_threading_callback:
                     main_threading_callback()

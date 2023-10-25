@@ -127,29 +127,27 @@ def check_for_exit_or_pause_key():
     while running:
         time.sleep(0.1)
 
-class Life(Base):
-    def action(self):
-        for key in self.keys:
-            delay_ms = random.randint(300, 758)
-            time.sleep(delay_ms / 1000)
-            press(key)
-            print("Life Press")
+def life_action():
+    print(life_percent, "%")
+    for key in life_key:
+        delay_ms = random.randint(300, 758)
+        time.sleep(delay_ms / 1000)
+        press(key)
+        print("Life Press")
 
-class Prayer(Base):
-    def action(self):
-        for key in self.keys:
-            delay_ms = random.randint(300, 758)
-            time.sleep(delay_ms / 1000)
-            press(key)
+def prayer_action():
+    for key in prayer_key:
+        delay_ms = random.randint(300, 758)
+        time.sleep(delay_ms / 1000)
+        press(key)
         print("Prayer Press")
 
-class LifePet(Base):
-    def action(self):
-        for key in self.keys:
-            delay_ms = random.randint(300, 758)
-            time.sleep(delay_ms / 1000)
-            press(key)
-            print("LifePet press")
+def life_pet_action():
+    for key in pet_life_key:
+        delay_ms = random.randint(300, 758)
+        time.sleep(delay_ms / 1000)
+        press(key)
+        print("LifePet press")
 
 def load_config_from_json():
     with open(os.path.join(root_directory, 'Json', 'teclas.json'), 'r') as file:
@@ -198,14 +196,13 @@ def main_threading():
     window_monitor_thread = Thread(target=monitor_window_state)
     window_monitor_thread.start()
 
-    life = Life(getLife, life_percent, life_key)
-    prayer = Prayer(getPrayer, prayer_percent, prayer_key)
-    pet_life = LifePet(getPet_life, pet_life_percent, pet_life_key)
+    life = Base(getLife, life_percent, life_action)
+    prayer = Base(getPrayer, prayer_percent, prayer_action)
+    pet_life = Base(getPet_life, pet_life_percent, life_pet_action)
 
     life_thread = Thread(target=life.execute)
     prayer_thread = Thread(target=prayer.execute)
     pet_thread = Thread(target=pet_life.execute)
-
 
     life_thread.start()
     print("Life Iniciada")
@@ -215,9 +212,9 @@ def main_threading():
     print("Life Pet Iniciada")
 
     #minimize_window()
-    while is_runescape_running():
-        time.sleep(1)
-    time.sleep(3)
+    # while is_runescape_running():
+    #     time.sleep(1)
+    # time.sleep(3)
     exit()
 
 if __name__ == "__main__":
