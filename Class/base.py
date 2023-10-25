@@ -1,5 +1,5 @@
 import time
-from Class.shared import running, paused
+from Class.shared import running, paused, restart
 from Class.shared import clear_console
 
 class Base:
@@ -13,7 +13,6 @@ class Base:
             if not paused:
                 try:
                     value = self.getter()
-
                     # Convert the value to float safely
                     if isinstance(value, str):
                         try:

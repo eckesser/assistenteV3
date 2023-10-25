@@ -44,7 +44,7 @@ class ImageFinder:
         return None, None
 
     def find_image_hp_coords(self, image_path):
-        location = pyautogui.locateOnScreen(image_path, confidence=0.7)
+        location = pyautogui.locateOnScreen(image_path, confidence=0.8)
         if location:
             adjusted_coords = (
                 location.left + 21,

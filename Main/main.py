@@ -136,6 +136,7 @@ def life_action():
         print("Life Press")
 
 def prayer_action():
+    print(prayer_percent, "%")
     for key in prayer_key:
         delay_ms = random.randint(300, 758)
         time.sleep(delay_ms / 1000)
@@ -143,6 +144,7 @@ def prayer_action():
         print("Prayer Press")
 
 def life_pet_action():
+    print(pet_life_percent, "%")
     for key in pet_life_key:
         delay_ms = random.randint(300, 758)
         time.sleep(delay_ms / 1000)
@@ -211,10 +213,6 @@ def main_threading():
     pet_thread.start()
     print("Life Pet Iniciada")
 
-    #minimize_window()
-    # while is_runescape_running():
-    #     time.sleep(1)
-    # time.sleep(3)
     exit()
 
 if __name__ == "__main__":
