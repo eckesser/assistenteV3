@@ -11,6 +11,7 @@ import psutil
 root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_directory)
 
+
 def global_exception_handler(exc_type, exc_value, exc_traceback):
     logger = ErrorLogger()  
     error_message = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
@@ -29,8 +30,8 @@ from PIL import Image
 from pyautogui import press
 from pystray import Icon as TrayIcon, MenuItem
 from threading import Thread
-
-from Class.shared import running, paused
+from Main.main_menu import main_menu
+from Class.shared import running, paused, restart
 
 life_key = ['']
 life_percent = 1
@@ -38,9 +39,6 @@ prayer_key = ['']
 prayer_percent = 1
 pet_life_key = ['']
 pet_life_percent = 1
-# running = True
-# paused = False
-restart = False
 
 def open_log_directory(icon):
     support.Support.zip_logs()
@@ -191,9 +189,6 @@ def execute_classes_in_sequence():
     except Exception:
         print(f"An error occurred. Restarting the sequence.")
 
-def clear_console():
-    print('\033c')
-
 def main_threading():
     load_config_from_json()
 
@@ -225,90 +220,5 @@ def main_threading():
     time.sleep(3)
     exit()
 
-def main_menu():
-    while True:
-        clear_console()
-        print("\nRS3 Assist")
-        print("-------------------------")
-        print("1. Configurar teclas")
-        print("2. Configurar porcentagem")
-        print("3. Configurar pots e magias (FUTURA IMPLEMENTACAO)")
-        print("4. Exibir teclas salvas")
-        print("5. Start")
-        print("6. Exit")
-        print("-------------------------")
-        print("Comandos:")
-        print("Botao END para Pause e Resume do programa.")
-        print("Botao F12, para FECHAR o programa")
-        print("-------------------------")
-        #print("Quando o programa estiver executando ele ira minimizar.")
-        print("Deixe sempre as barras de VIDA, PRAYER e VIDA do PET amostra")
-        print("-------------------------")
-        choice = input("Digite a opcao desejada: ")
-        if choice == "1":
-            clear_console()
-            print("\nConfiguracoes de teclas")
-            print("-------------------------")
-            print("\n")
-            from Config.keys import KeyManager
-            KeyManager()
-        elif choice == "2":
-            clear_console()
-            print("\nConfiguracoes de das porcentagens")
-            print("-------------------------")
-            print("\n")
-            from Config.perct_key import JsonSaver
-            JsonSaver()
-        elif choice == "3":
-            clear_console()
-            # print("\nConfiguracoes de das teclas de porcoes e magias")
-            # print("-------------------------")
-            # print("\n")
-            # from Config.keys_pots import KeyManagerPot
-            # KeyManagerPot()
-        elif choice == "4":
-            clear_console() #limpa o console antes de exibir
-            from Config.configs import JsonViewerUpdated
-            viewer = JsonViewerUpdated(os.path.join(root_directory, 'Json'))
-            viewer.display_content()
-            input("Pressione ENTER para voltar.")
-            main_menu()
-        elif choice == "5":
-            clear_console()
-            tray_icon_thread = Thread(target=tray_icon_manager)
-            tray_icon_thread.start()
-            print("Verificando configuracoes:")
-            time.sleep(0.4)
-            print("Dados de teclas carregados... Ok!")
-            time.sleep(0.4)
-            print("Dados de porcentagem carregado... Ok!")
-            time.sleep(0.4)
-            print("Dados das teclas de pot carregado... Ok!")
-            time.sleep(0.4)
-            print("Verificando se Runescape...")
-            time.sleep(0.4)
-            if is_runescape_running():
-                print("Runescape aberto.")
-                from Config.coords import ImageFinder
-                ImageFinder()
-                # print("Programa iniciado, minimizando...")
-                #minimize_window()
-                windows = gw.getWindowsWithTitle('RuneScape')
-                if windows:
-                    windows[0].activate()
-                time.sleep(1)
-                main_threading()
-            else:
-                print("Abra o runescape... Reiniciando programa.")
-                time.sleep(2)
-                main_menu()
-        elif choice == "6":
-            global running
-            running = False
-            print("Fechando programa.")
-            exit(0)
-        else:
-            print("Opcao invalida, escolha uma das opcoes acima.")
-
 if __name__ == "__main__":
-    main_menu()
+    main_menu(main_threading, tray_icon_manager)

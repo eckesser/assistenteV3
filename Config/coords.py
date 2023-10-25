@@ -28,7 +28,7 @@ class ImageFinder:
         )
         screenshot = pyautogui.screenshot(region=expanded_region)
         text = pytesseract.image_to_string(screenshot, config='--psm 6').strip()
-        if all(char in "0123456789/" for char in text):
+        if all(char in "/0123456789" for char in text):
             text_location = pyautogui.locateOnScreen(screenshot, region=expanded_region)
             if text_location:
                 return text, f"{int(text_location.left)}, {int(text_location.top)}, {int(text_location.left + text_location.width)}, {int(text_location.top + text_location.height)}"

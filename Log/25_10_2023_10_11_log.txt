@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "C:\Users\Erick\Desktop\Projetos\assistenteV3\Main\main.py", line 224, in <module>
+    main_menu(main_threading, tray_icon_manager)
+  File "C:\Users\Erick\Desktop\Projetos\assistenteV3\Main\main_menu.py", line 77, in main_menu
+    windows[0].activate()
+  File "C:\Users\Erick\AppData\Local\Programs\Python\Python311\Lib\site-packages\pygetwindow\_pygetwindow_win.py", line 246, in activate
+    _raiseWithLastError()
+  File "C:\Users\Erick\AppData\Local\Programs\Python\Python311\Lib\site-packages\pygetwindow\_pygetwindow_win.py", line 99, in _raiseWithLastError
+    raise PyGetWindowException('Error code from Windows: %s - %s' % (errorCode, _formatMessage(errorCode)))
+pygetwindow.PyGetWindowException: Error code from Windows: 0 - A operação foi concluída com êxito.
