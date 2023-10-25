@@ -152,8 +152,10 @@ def life_pet_action():
         print("LifePet press")
 
 def load_config_from_json():
+
     with open(os.path.join(root_directory, 'Json', 'teclas.json'), 'r') as file:
         teclas_config = json.load(file)
+
     global life_key, prayer_key, pet_life_key
     life_key = teclas_config.get('life_key', life_key)
     prayer_key = teclas_config.get('prayer_key', prayer_key)
@@ -161,6 +163,7 @@ def load_config_from_json():
     
     with open(os.path.join(root_directory, 'Json', 'percent_key.json'), 'r') as file:
         percent_config = json.load(file)
+
     global life_percent, prayer_percent, pet_life_percent
     life_percent = percent_config.get('life_percent', life_percent)
     prayer_percent = percent_config.get('prayer_percent', prayer_percent)
@@ -198,22 +201,27 @@ def main_threading():
     window_monitor_thread = Thread(target=monitor_window_state)
     window_monitor_thread.start()
 
-    life = Base(getLife, life_percent, life_action)
-    prayer = Base(getPrayer, prayer_percent, prayer_action)
-    pet_life = Base(getPet_life, pet_life_percent, life_pet_action)
+    # Verificamos se as teclas estão definidas (não são listas vazias) antes de iniciar as threads
+    if life_key:
+        life = Base(getLife, life_percent, life_action)
+        life_thread = Thread(target=life.execute)
+        life_thread.start()
+        print("Life Iniciada")
 
-    life_thread = Thread(target=life.execute)
-    prayer_thread = Thread(target=prayer.execute)
-    pet_thread = Thread(target=pet_life.execute)
+    if prayer_key:
+        prayer = Base(getPrayer, prayer_percent, prayer_action)
+        prayer_thread = Thread(target=prayer.execute)
+        prayer_thread.start()
+        print("Prayer Iniciada")
 
-    life_thread.start()
-    print("Life Iniciada")
-    prayer_thread.start()
-    print("Prayer Iniciada")
-    pet_thread.start()
-    print("Life Pet Iniciada")
+    if pet_life_key:
+        pet_life = Base(getPet_life, pet_life_percent, life_pet_action)
+        pet_thread = Thread(target=pet_life.execute)
+        pet_thread.start()
+        print("Life Pet Iniciada")
 
     exit()
 
 if __name__ == "__main__":
     main_menu(main_threading, tray_icon_manager)
+    

@@ -16,7 +16,7 @@ def getLife():
     # Verifica se percent é None ou não numérico e trata a situação
     if percent is None or not isinstance(percent, (int, float)):
         # Aqui você pode adicionar um log para registrar quando isso acontece
-        print(f"Unexpected value from OCR: {percent}. Defaulting to 100.")
+        print(f"Barra de vida do nao encontrada.")
         return 100  # Retorne um valor padrão (por exemplo, 100) ou qualquer valor que faça sentido para sua aplicação
 
     return percent
