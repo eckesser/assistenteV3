@@ -4,8 +4,7 @@ import os
 from PIL import Image
 import pytesseract
 from Config.rscheck import is_runescape_running
-#from rscheck import is_runescape_running
-
+import easyocr
 
 class ImageFinder:
     
@@ -19,7 +18,14 @@ class ImageFinder:
             image_path = os.path.join("img_return", file_name)
             image.save(image_path)
 
+    def get_reference_characters_from_image(self, path):
+        reader = easyocr.Reader(['en'])
+        results = reader.readtext(path)
+        chars = ''.join([result[1] for result in results])
+        return set(chars)
+
     def find_text_coords(self, region):
+        reference_chars = self.get_reference_characters_from_image("Imagem/fonte_ocr.png")
         expanded_region = (
             region[0],
             region[1],
@@ -27,20 +33,23 @@ class ImageFinder:
             region[3],
         )
         screenshot = pyautogui.screenshot(region=expanded_region)
-        text = pytesseract.image_to_string(screenshot, config='--psm 6').strip()
-        if all(char in "0123456789/" for char in text):
+        reader = easyocr.Reader(['en'])
+        results = reader.readtext(screenshot)
+        texts = [result[1] for result in results if result[-2] >= 0.6]
+        result = ' '.join(texts)
+        if all(char in reference_chars for char in result):
             text_location = pyautogui.locateOnScreen(screenshot, region=expanded_region)
             if text_location:
-                return text, f"{int(text_location.left)}, {int(text_location.top)}, {int(text_location.left + text_location.width)}, {int(text_location.top + text_location.height)}"
+                return result, f"{int(text_location.left)}, {int(text_location.top)}, {int(text_location.left + text_location.width)}, {int(text_location.top + text_location.height)}"
         return None, None
 
     def find_image_hp_coords(self, image_path):
-        location = pyautogui.locateOnScreen(image_path, confidence=0.7)
+        location = pyautogui.locateOnScreen(image_path, confidence=0.8)
         if location:
             adjusted_coords = (
-                location.left + 24,
-                location.top + 1,
-                location.left + 114,
+                location.left + 21,
+                location.top + 0,
+                location.left + 113,
                 location.top + 16
             )
             return f"{adjusted_coords[0]}, {adjusted_coords[1]}, {adjusted_coords[2]}, {adjusted_coords[3]}"
