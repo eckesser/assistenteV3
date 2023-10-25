@@ -1,0 +1,2 @@
+running = True
+paused = False

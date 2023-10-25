@@ -18,7 +18,7 @@ def global_exception_handler(exc_type, exc_value, exc_traceback):
     sys.__excepthook__(exc_type, exc_value, exc_traceback)
 sys.excepthook = global_exception_handler
 
-from Class.KeyPresser import KeyPresser
+from Class.base import Base
 from Class.life import getLife
 from Class.life_pet import getPet_life
 from Class.prayer import getPrayer
@@ -30,14 +30,16 @@ from pyautogui import press
 from pystray import Icon as TrayIcon, MenuItem
 from threading import Thread
 
+from Class.shared import running, paused
+
 life_key = ['']
 life_percent = 1
 prayer_key = ['']
 prayer_percent = 1
 pet_life_key = ['']
 pet_life_percent = 1
-running = True
-paused = False
+# running = True
+# paused = False
 restart = False
 
 def open_log_directory(icon):
@@ -72,10 +74,6 @@ def monitor_window_state():
             windows[0].hide()
         time.sleep(0.5)
 
-# def kill_processes():
-#     os.system('taskkill /F /IM conhost.exe')
-#     os.system('taskkill /F /IM cmd.exe')
-
 def kill_processes():
     for process in psutil.process_iter():
         try:
@@ -97,10 +95,10 @@ def tray_icon_manager():
     icon_path_green = os.path.join(root_directory, 'Icon', 'green.png')
     icon_image_green = Image.open(icon_path_green)
     menu = (
-        MenuItem('Open', lambda icon, item: restore_window()),
+        #MenuItem('Open', lambda icon, item: restore_window()),
         MenuItem('Pause/Resume', lambda icon, item: toggle_pause(icon)),
         MenuItem('Restart', lambda icon, item: restart_program(icon)),
-        MenuItem('Suporte', lambda icon, item: open_log_directory(icon)),
+        #MenuItem('Suporte', lambda icon, item: open_log_directory(icon)),
         MenuItem('Exit', lambda icon, item: exit_program(icon))
     )
     tray_icon = TrayIcon("RS3 Assist", icon_image_green, "RS3 Assist", menu)
@@ -130,28 +128,6 @@ def check_for_exit_or_pause_key():
     keyboard.hook(on_key_event)
     while running:
         time.sleep(0.1)
-
-class Base:
-    def __init__(self, getter, threshold_percent, keys=None):
-        self.getter = getter
-        self.threshold_percent = threshold_percent
-        self.keys = keys
-
-    def execute(self):
-        while running:
-            if not paused:
-                try:
-                    value = self.getter()
-                    if value > 100:
-                        continue
-                    if value <= self.threshold_percent:
-                        self.action()
-                    time.sleep(0.5)
-                except Exception as e:
-                    print(f"Error in {self.__class__.__name__}: {e}. Restarting...")
-                    continue
-    def action(self):
-        raise NotImplementedError
 
 class Life(Base):
     def action(self):
@@ -202,22 +178,18 @@ def execute_classes_in_sequence():
         print('Runescape não detectado após várias tentativas. Fechando o assistente.')
         exit()
     print('Runescape aberto.')
+
     from Config.coords import ImageFinder
     from Config.perct_key import JsonSaver
     from Config.keys import KeyManager
+
     try:
         ImageFinder()
         KeyManager()
         JsonSaver()
+
     except Exception:
         print(f"An error occurred. Restarting the sequence.")
-
-def monitor_window_state():
-    while running:
-        windows = gw.getWindowsWithTitle('RS3 Assist')
-        if windows and windows[0].isMinimized:
-            windows[0].hide()
-        time.sleep(1)
 
 def clear_console():
     print('\033c')
@@ -320,7 +292,7 @@ def main_menu():
                 from Config.coords import ImageFinder
                 ImageFinder()
                 # print("Programa iniciado, minimizando...")
-                # minimize_window()
+                #minimize_window()
                 windows = gw.getWindowsWithTitle('RuneScape')
                 if windows:
                     windows[0].activate()
