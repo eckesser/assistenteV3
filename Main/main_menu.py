@@ -18,7 +18,7 @@ def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
         print("-------------------------")
         print("1. Configurar teclas")
         print("2. Configurar porcentagem")
-        print("3. Configurar pots e magias (FUTURA IMPLEMENTACAO)")
+        print("3. Configurar pots e magias")
         print("4. Exibir teclas salvas")
         print("5. Start")
         print("6. Exit")
