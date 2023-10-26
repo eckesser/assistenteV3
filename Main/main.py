@@ -30,7 +30,7 @@ from pystray import Icon as TrayIcon, MenuItem
 from threading import Thread
 from Main.main_menu import main_menu
 from Class.shared import running, paused, restart, kill_processes
-from Class.keymanager360 import KeyManager
+#from Class.keymanager import KeyManager
 
 
 life_key = ['']
@@ -141,6 +141,52 @@ def life_pet_action():
         press(key)
         print("Restaurando vida do pet.")
 
+from Class.keypresser import KeyPresser
+
+import time
+
+def press360sec():
+    while True:
+        # Lendo o arquivo Json/ulti.json
+        with open('Json/ulti.json', 'r') as f:
+            data = json.load(f)
+
+        keys_to_check = ['ovl_key', 'anti_fire_key', 'anti_poison_key', 'aggression_key']
+
+        for key in keys_to_check:
+            value = data.get(key)
+            
+            # Se o valor não for nulo, crie uma instância da KeyPresser e chame o método press
+            if value:
+                keypress = KeyPresser(key, data)
+                keypress.press()
+                time.sleep(1)  # Espera 1 segundos entre as variáveis
+
+        # Espera um tempo aleatório entre 345 e 360 segundos
+        time_to_wait = random.randint(345, 360)
+        time.sleep(time_to_wait)
+
+def press720sec():
+    while True:
+        # Lendo o arquivo Json/ulti.json
+        with open('Json/ulti.json', 'r') as f:
+            data = json.load(f)
+
+        keys_to_check = ['weapon_poison_key', 'necro_mage_key']
+
+        for key in keys_to_check:
+            value = data.get(key)
+            
+            # Se o valor não for nulo, crie uma instância da KeyPresser e chame o método press
+            if value:
+                keypress = KeyPresser(key, data)
+                keypress.press()
+                time.sleep(1)  # Espera 1 segundos entre as variáveis
+
+        # Espera um tempo aleatório entre 690 e 720 segundos
+        time_to_wait = random.randint(690, 720)
+        time.sleep(time_to_wait)
+
 def load_config_from_json():
 
     with open(os.path.join(root_directory, 'Json', 'teclas.json'), 'r') as file:
@@ -190,6 +236,14 @@ def main_threading():
     
     window_monitor_thread = Thread(target=monitor_window_state)
     window_monitor_thread.start()
+
+    pressionar_thread = Thread(target=press360sec)
+    pressionar_thread.start()
+    print("Iniciando monitoramento de 360 segundos")
+
+    pressionar_thread2 = Thread(target=press720sec)
+    pressionar_thread2.start()
+    print("Iniciando monitoramento de 720 segundos")
 
     if life_key:
         life_value = getLife()
