@@ -1,5 +1,11 @@
 import threading
 import time
+
+import os
+import sys
+root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(root_directory)
+
 from Class.KeyPresser import KeyPresser
 
 class Thread_720:

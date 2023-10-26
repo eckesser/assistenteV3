@@ -1,6 +1,13 @@
 import json
+
+import os
+import sys
+root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(root_directory)
+
 from time360 import Time360
 from time720 import Time720
+from first_press import FirstPress
 
 class JsonReader:
     def __init__(self, file_path):
@@ -9,6 +16,12 @@ class JsonReader:
     def read_and_execute(self):
         with open(self.file_path, 'r') as file:
             data = json.load(file)
+            
+            # Primeira ativação das teclas com FirstPress
+            first_press = FirstPress(data)
+            first_press.run()
+
+            # Iniciar a contagem com Time360 ou Time720
             for key, value in data.items():
                 if value:  # Checagem modificada para valores "falsy"
                     if key in ["ovl_key", "anti_fire_key", "Anti-fire", "anti_poison_key", "Anti-Poison", "aggression_key", "Aggression potion"]:

@@ -1,6 +1,12 @@
 import random
 import threading
 import time
+
+import os
+import sys
+root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(root_directory)
+
 from thread_720 import Thread_720
 
 class Time720:
@@ -12,7 +18,8 @@ class Time720:
         end_time = max_time - (0.1 * random.random() * max_time)  # Reduzindo até 10% do tempo total
         time.sleep(end_time)
         Thread_720().run()
-        print(f"Tempo finalizado para a chave {key_name}!")
+        print(f"Usando: {key_name}!")
+        print(f"Usando novamente {key_name} em: {end_time} segundos")
 
     def run(self, key_name):
         if self.timer_thread and self.timer_thread.is_alive():

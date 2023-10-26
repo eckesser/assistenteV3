@@ -51,7 +51,12 @@ def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
 
         elif choice == "3":
             clear_console()
-            # Code for future implementation
+            print("\nConfiguracoes de utilitarios")
+            print("-------------------------")
+            print("\n")     
+            from Config.keys_pots import KeyManagerPot       
+            manager = KeyManagerPot()
+            manager.run()
 
         elif choice == "4":
             clear_console() 

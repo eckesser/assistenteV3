@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "C:\Users\Erick\Desktop\Projetos\assistenteV3\Main\main.py", line 34, in <module>
+    from Config_keys.jsonreader import JsonReader
+  File "C:\Users\Erick\Desktop\Projetos\assistenteV3\Config_keys\jsonreader.py", line 8, in <module>
+    from time360 import Time360
+ModuleNotFoundError: No module named 'time360'
