@@ -1,6 +1,9 @@
 import json
 import os
 
+from Class.shared import clear_console
+from Main.main_menu import main_menu
+
 class KeyManager:
     
     def __init__(self):
@@ -9,7 +12,6 @@ class KeyManager:
             'prayer_key': 'Prayer',
             'pet_life_key': 'Pet Life'
         }
-        pass
 
     def get_label(self, key):
         """Return the user-friendly label for the key."""
@@ -30,7 +32,13 @@ class KeyManager:
         """Get the number of keys the user wants to assign."""
         while True:
             try:
-                num = int(input(f"Quantas teclas você deseja designar para {self.get_label(label)} (máximo {max_keys}): "))
+                print(f"\nCaso nao deseje mapear a {self.get_label(label)}, aperte ENTER!")
+                print("-------------------------")
+                print("\n")
+                num = input(f"Quantas teclas você deseja designar para {self.get_label(label)} (máximo {max_keys}): ")
+                if not num:  # If user input is empty
+                    return None
+                num = int(num)
                 if 0 < num <= max_keys:
                     return num
                 else:
@@ -38,27 +46,54 @@ class KeyManager:
             except ValueError:
                 print("Por favor, insira um número válido.")
 
+    def choose_label_to_edit(self):
+        while True:
+            print("\nEscolha qual configuracao você deseja editar:")
+            print("-------------------------")
+            print("\n")
+            print("1. Life")
+            print("2. Prayer")
+            print("3. Pet Life")
+            print("4. Voltar")
+            print("\n")
+            choice = input("Digite a opção desejada: ")
+            if choice == "1":
+                clear_console() 
+                return 'life_key', 3
+            elif choice == "2":
+                clear_console() 
+                return 'prayer_key', 1
+            elif choice == "3":
+                clear_console() 
+                return 'pet_life_key', 2
+            elif choice == "4":
+                clear_console() 
+                return main_menu()
+            else:
+                print("Opção inválida. Tente novamente.")
+
+    def load_existing_data(self, path):
+        """Load existing data from a JSON file."""
+        if os.path.exists(path):
+            with open(path, 'r') as f:
+                return json.load(f)
+        return {}
+
     def save_to_json(self, data, path):
         """Save data to a JSON file."""
+        existing_data = self.load_existing_data(path)
+        existing_data.update(data)  # Update the existing data with the new data
         with open(path, 'w') as f:
-            json.dump(data, f, indent=4)
+            json.dump(existing_data, f, indent=4)
 
     def run(self):
         if not os.path.exists("Json"):
             os.mkdir("Json")
-        
-        data = {}
-        
-        num_life_keys = self.get_number_of_keys('life_key', 3)
-        data['life_key'] = self.get_keys_for('life_key', num_life_keys)
-        
-        num_prayer_keys = self.get_number_of_keys('prayer_key', 1)
-        data['prayer_key'] = self.get_keys_for('prayer_key', num_prayer_keys)
-        
-        num_pet_life_keys = self.get_number_of_keys('pet_life_key', 2)
-        data['pet_life_key'] = self.get_keys_for('pet_life_key', num_pet_life_keys)
-        
-        self.save_to_json(data, os.path.join("Json", "teclas.json"))
+
+        label, max_keys = self.choose_label_to_edit()
+        num_keys = self.get_number_of_keys(label, max_keys)
+        data_to_save = {label: self.get_keys_for(label, num_keys) if num_keys else None}
+        self.save_to_json(data_to_save, os.path.join("Json", "teclas.json"))
 
 manager = KeyManager()
 manager.run()

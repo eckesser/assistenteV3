@@ -6,11 +6,9 @@ import sys
 import time
 import traceback
 import random
-import psutil
 
 root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_directory)
-
 
 def global_exception_handler(exc_type, exc_value, exc_traceback):
     logger = ErrorLogger()  
@@ -31,7 +29,9 @@ from pyautogui import press
 from pystray import Icon as TrayIcon, MenuItem
 from threading import Thread
 from Main.main_menu import main_menu
-from Class.shared import running, paused, restart
+from Class.shared import running, paused, restart, kill_processes
+#from Class.keymanager import KeyManager
+
 
 life_key = ['']
 life_percent = 1
@@ -72,15 +72,6 @@ def monitor_window_state():
             windows[0].hide()
         time.sleep(0.5)
 
-def kill_processes():
-    for process in psutil.process_iter():
-        try:
-            process_name = process.name().lower()
-            if process_name == "conhost.exe" or process_name == "cmd.exe":
-                process.terminate()
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass
-
 def exit_program(icon):
     global running
     running = False
@@ -102,7 +93,7 @@ def tray_icon_manager():
     tray_icon = TrayIcon("RS3 Assist", icon_image_green, "RS3 Assist", menu)
     tray_icon.run()
 
-def toggle_pause(icon):
+def toggle_pause(Icon):
     global paused, tray_icon
     paused = not paused
     if paused:
@@ -117,6 +108,8 @@ def check_for_exit_or_pause_key():
         global running, paused, restart, tray_icon
         if e.name == 'end' and e.event_type == 'down':
             toggle_pause(tray_icon)
+            paused = True
+            running = False
         elif e.name == 'f12' and e.event_type == 'down':
             restart = True
             running = False
@@ -128,32 +121,77 @@ def check_for_exit_or_pause_key():
         time.sleep(0.1)
 
 def life_action():
-    print(life_percent, "%")
     for key in life_key:
         delay_ms = random.randint(300, 758)
         time.sleep(delay_ms / 1000)
         press(key)
-        print("Life Press")
+        print("Restaurando vida.")
 
 def prayer_action():
-    print(prayer_percent, "%")
     for key in prayer_key:
         delay_ms = random.randint(300, 758)
         time.sleep(delay_ms / 1000)
         press(key)
-        print("Prayer Press")
+        print("Restaurando prayer.")
 
 def life_pet_action():
-    print(pet_life_percent, "%")
     for key in pet_life_key:
         delay_ms = random.randint(300, 758)
         time.sleep(delay_ms / 1000)
         press(key)
-        print("LifePet press")
+        print("Restaurando vida do pet.")
+
+from Class.keypresser import KeyPresser
+
+import time
+
+def press360sec():
+    while True:
+        # Lendo o arquivo Json/ulti.json
+        with open('Json/ulti.json', 'r') as f:
+            data = json.load(f)
+
+        keys_to_check = ['ovl_key', 'anti_fire_key', 'anti_poison_key', 'aggression_key']
+
+        for key in keys_to_check:
+            value = data.get(key)
+            
+            # Se o valor não for nulo, crie uma instância da KeyPresser e chame o método press
+            if value:
+                keypress = KeyPresser(key, data)
+                keypress.press()
+                time.sleep(1)  # Espera 1 segundos entre as variáveis
+
+        # Espera um tempo aleatório entre 345 e 360 segundos
+        time_to_wait = random.randint(345, 360)
+        time.sleep(time_to_wait)
+
+def press720sec():
+    while True:
+        # Lendo o arquivo Json/ulti.json
+        with open('Json/ulti.json', 'r') as f:
+            data = json.load(f)
+
+        keys_to_check = ['weapon_poison_key', 'necro_mage_key']
+
+        for key in keys_to_check:
+            value = data.get(key)
+            
+            # Se o valor não for nulo, crie uma instância da KeyPresser e chame o método press
+            if value:
+                keypress = KeyPresser(key, data)
+                keypress.press()
+                time.sleep(1)  # Espera 1 segundos entre as variáveis
+
+        # Espera um tempo aleatório entre 690 e 720 segundos
+        time_to_wait = random.randint(690, 720)
+        time.sleep(time_to_wait)
 
 def load_config_from_json():
+
     with open(os.path.join(root_directory, 'Json', 'teclas.json'), 'r') as file:
         teclas_config = json.load(file)
+
     global life_key, prayer_key, pet_life_key
     life_key = teclas_config.get('life_key', life_key)
     prayer_key = teclas_config.get('prayer_key', prayer_key)
@@ -161,6 +199,7 @@ def load_config_from_json():
     
     with open(os.path.join(root_directory, 'Json', 'percent_key.json'), 'r') as file:
         percent_config = json.load(file)
+
     global life_percent, prayer_percent, pet_life_percent
     life_percent = percent_config.get('life_percent', life_percent)
     prayer_percent = percent_config.get('prayer_percent', prayer_percent)
@@ -198,22 +237,50 @@ def main_threading():
     window_monitor_thread = Thread(target=monitor_window_state)
     window_monitor_thread.start()
 
-    life = Base(getLife, life_percent, life_action)
-    prayer = Base(getPrayer, prayer_percent, prayer_action)
-    pet_life = Base(getPet_life, pet_life_percent, life_pet_action)
+    pressionar_thread = Thread(target=press360sec)
+    pressionar_thread.start()
+    print("Iniciando monitoramento de 360 segundos")
 
-    life_thread = Thread(target=life.execute)
-    prayer_thread = Thread(target=prayer.execute)
-    pet_thread = Thread(target=pet_life.execute)
+    pressionar_thread2 = Thread(target=press720sec)
+    pressionar_thread2.start()
+    print("Iniciando monitoramento de 720 segundos")
 
-    life_thread.start()
-    print("Life Iniciada")
-    prayer_thread.start()
-    print("Prayer Iniciada")
-    pet_thread.start()
-    print("Life Pet Iniciada")
+    if life_key:
+        life_value = getLife()
+
+        if life_value is not None:
+
+            life = Base(getLife, life_percent, life_action)
+            life_thread = Thread(target=life.execute)
+            life_thread.start()
+            print("iniciando monitoramento da Vida")
+        else:
+            print("Monitoramento da vida nao iniciada")
+
+    if prayer_key:
+        prayer_value = getPrayer()
+    
+        if prayer_value is not None:
+            prayer = Base(getPrayer, prayer_percent, prayer_action)
+            prayer_thread = Thread(target=prayer.execute)
+            prayer_thread.start()
+            print("iniciando monitoramento do Prayer")
+        else:
+            print("Monitoramento da oracao nao iniciada")
+
+    if pet_life_key:
+        pet_life_value = getPet_life()
+        
+        if pet_life_value is not None:
+            pet_life = Base(getPet_life, pet_life_percent, life_pet_action)
+            pet_thread = Thread(target=pet_life.execute)
+            pet_thread.start()
+            print("iniciando monitoramento do Pet")
+        else:
+            print("Monitoramento do pet nao iniciado")
 
     exit()
 
 if __name__ == "__main__":
     main_menu(main_threading, tray_icon_manager)
+    

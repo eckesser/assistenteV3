@@ -11,12 +11,18 @@ def getLife():
     ocr_processor = OCR()  # Alterando 'ocr' para 'OCR'
 
     coords_life = ocr_processor.data['coordinates']['coords_life']
+
+    # Verifica se coords_pet_life é None e retorna None se for o caso
+    if coords_life is None:
+        print("Barra de vida não encontrada. (NAO MONITORANDO)")
+        return None
+    
     percent = ocr_processor.ocr_from_coords(coords_life)
 
     # Verifica se percent é None ou não numérico e trata a situação
     if percent is None or not isinstance(percent, (int, float)):
         # Aqui você pode adicionar um log para registrar quando isso acontece
-        print(f"Unexpected value from OCR: {percent}. Defaulting to 100.")
+        print(f"Barra de vida do nao encontrada.")
         return 100  # Retorne um valor padrão (por exemplo, 100) ou qualquer valor que faça sentido para sua aplicação
 
     return percent
