@@ -11,6 +11,12 @@ def getPrayer():
     ocr_processor = OCR()  # Alterando 'ocr' para 'OCR'
 
     coords_pray = ocr_processor.data['coordinates']['coords_pray']
+
+    # Verifica se coords_pet_life é None e retorna None se for o caso
+    if coords_pray is None:
+        print("Barra de Prayer não encontrada.(NAO MONITORANDO)")
+        return None
+
     percent = ocr_processor.ocr_from_coords(coords_pray)
 
     # Verifica se percent é None ou não numérico e trata a situação

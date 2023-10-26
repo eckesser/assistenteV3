@@ -84,14 +84,17 @@ def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
                 print("Runescape aberto.")
                 from Config.coords import ImageFinder
                 ImageFinder()
-                from Config_keys.jsonreader import JsonReader
-                JsonReader()
                 # windows = gw.getWindowsWithTitle('RuneScape')
                 # if windows:
                 #     windows[0].activate()
                 time.sleep(1)
                 if main_threading_callback:
                     main_threading_callback()
+
+                    from Class.keymanager360 import KeyManager
+                    key_manager = KeyManager(os.path.join(root_directory, 'Json', 'ulti.json'))
+                    key_manager_thread = Thread(target=key_manager.run)
+                    key_manager_thread.start()
             else:
                 print("Abra o runescape... Reiniciando programa.")
                 time.sleep(2)

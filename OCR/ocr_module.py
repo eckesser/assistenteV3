@@ -51,7 +51,7 @@ class OCR:
                 
                 percent = round((num1 / num2) * 100)
                 
-                #print(f"{num1} / {num2}")
+                print(f"{num1} / {num2}")
                 # Se percent for maior que 100, definimos como 100
                 return min(100, percent)
         except ValueError as e:
