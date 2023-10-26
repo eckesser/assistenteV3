@@ -72,15 +72,6 @@ def monitor_window_state():
             windows[0].hide()
         time.sleep(0.5)
 
-# def kill_processes():
-#     for process in psutil.process_iter():
-#         try:
-#             process_name = process.name().lower()
-#             if process_name == "conhost.exe" or process_name == "cmd.exe":
-#                 process.terminate()
-#         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-#             pass
-
 def exit_program(icon):
     global running
     running = False
@@ -128,28 +119,25 @@ def check_for_exit_or_pause_key():
         time.sleep(0.1)
 
 def life_action():
-    print(life_percent, "%")
     for key in life_key:
         delay_ms = random.randint(300, 758)
         time.sleep(delay_ms / 1000)
         press(key)
-        print("Life Press")
+        print("Restaurando vida.")
 
 def prayer_action():
-    print(prayer_percent, "%")
     for key in prayer_key:
         delay_ms = random.randint(300, 758)
         time.sleep(delay_ms / 1000)
         press(key)
-        print("Prayer Press")
+        print("Restaurando prayer.")
 
 def life_pet_action():
-    print(pet_life_percent, "%")
     for key in pet_life_key:
         delay_ms = random.randint(300, 758)
         time.sleep(delay_ms / 1000)
         press(key)
-        print("LifePet press")
+        print("Restaurando vida do pet.")
 
 def load_config_from_json():
 
@@ -201,24 +189,23 @@ def main_threading():
     window_monitor_thread = Thread(target=monitor_window_state)
     window_monitor_thread.start()
 
-    # Verificamos se as teclas estão definidas (não são listas vazias) antes de iniciar as threads
     if life_key:
         life = Base(getLife, life_percent, life_action)
         life_thread = Thread(target=life.execute)
         life_thread.start()
-        print("Life Iniciada")
+        print("iniciando monitoramento da Vida")
 
     if prayer_key:
         prayer = Base(getPrayer, prayer_percent, prayer_action)
         prayer_thread = Thread(target=prayer.execute)
         prayer_thread.start()
-        print("Prayer Iniciada")
+        print("iniciando monitoramento do Prayer")
 
     if pet_life_key:
         pet_life = Base(getPet_life, pet_life_percent, life_pet_action)
         pet_thread = Thread(target=pet_life.execute)
         pet_thread.start()
-        print("Life Pet Iniciada")
+        print("iniciando monitoramento do Pet")
 
     exit()
 

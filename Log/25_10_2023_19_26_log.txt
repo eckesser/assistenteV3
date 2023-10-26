@@ -1,8 +1,0 @@
-Traceback (most recent call last):
-  File "C:\Users\Erick\Desktop\Projetos\assistenteV3\Main\main.py", line 226, in <module>
-    main_menu(main_threading, tray_icon_manager)
-  File "C:\Users\Erick\Desktop\Projetos\assistenteV3\Main\main_menu.py", line 16, in main_menu
-    clear_console()
-  File "C:\Users\Erick\Desktop\Projetos\assistenteV3\Class\shared.py", line 8, in clear_console
-    print('\033c')
-OSError: [WinError 233] Não há processo no outro extremo do pipe
