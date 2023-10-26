@@ -83,5 +83,9 @@ class KeyManagerPot:
         with open(path, 'w') as f:
             json.dump(existing_data, f, indent=4)
 
-manager = KeyManagerPot()
-manager.run()
+def execute_manager():
+    manager = KeyManagerPot()
+    manager.run()
+
+# manager = KeyManagerPot()
+# manager.run()

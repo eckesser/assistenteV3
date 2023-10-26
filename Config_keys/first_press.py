@@ -1,14 +1,9 @@
 import time
 import threading
 
-import os
-import sys
-root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(root_directory)
-
 from Class.KeyPresser import KeyPresser
-from time_360 import Time360
-from time720 import Time720
+from Config_keys.time360 import Time360
+from Config_keys.time720 import Time720
 
 class FirstPress:
     def __init__(self, json_data):

@@ -3,7 +3,10 @@
         "all",
         "1"
     ],
-    "anti_fire_key": null,
+    "anti_fire_key": [
+        "alt",
+        "5"
+    ],
     "anti_poison_key": null,
     "aggression_key": null,
     "weapon_poison_key": [

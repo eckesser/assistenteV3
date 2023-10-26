@@ -1,13 +1,13 @@
 import json
-
 import os
 import sys
+
 root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_directory)
 
-from time360 import Time360
-from time720 import Time720
-from first_press import FirstPress
+from Config_keys.time360 import Time360
+from Config_keys.time720 import Time720
+from Config_keys.first_press import FirstPress
 
 class JsonReader:
     def __init__(self, file_path):

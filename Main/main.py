@@ -31,7 +31,6 @@ from pystray import Icon as TrayIcon, MenuItem
 from threading import Thread
 from Main.main_menu import main_menu
 from Class.shared import running, paused, restart, kill_processes
-from Config_keys.jsonreader import JsonReader
 
 life_key = ['']
 life_percent = 1
@@ -182,9 +181,6 @@ def execute_classes_in_sequence():
 
 def main_threading():
     load_config_from_json()
-
-    reader = JsonReader("Json/ulti.json")
-    reader.read_and_execute()
 
     exit_thread = Thread(target=check_for_exit_or_pause_key)
     exit_thread.start()
