@@ -10,7 +10,6 @@ import random
 root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_directory)
 
-
 def global_exception_handler(exc_type, exc_value, exc_traceback):
     logger = ErrorLogger()  
     error_message = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
@@ -31,6 +30,8 @@ from pystray import Icon as TrayIcon, MenuItem
 from threading import Thread
 from Main.main_menu import main_menu
 from Class.shared import running, paused, restart, kill_processes
+from Class.keymanager360 import KeyManager
+
 
 life_key = ['']
 life_percent = 1
@@ -92,7 +93,7 @@ def tray_icon_manager():
     tray_icon = TrayIcon("RS3 Assist", icon_image_green, "RS3 Assist", menu)
     tray_icon.run()
 
-def toggle_pause(icon):
+def toggle_pause(Icon):
     global paused, tray_icon
     paused = not paused
     if paused:
@@ -107,6 +108,8 @@ def check_for_exit_or_pause_key():
         global running, paused, restart, tray_icon
         if e.name == 'end' and e.event_type == 'down':
             toggle_pause(tray_icon)
+            paused = True
+            running = False
         elif e.name == 'f12' and e.event_type == 'down':
             restart = True
             running = False
@@ -189,22 +192,38 @@ def main_threading():
     window_monitor_thread.start()
 
     if life_key:
-        life = Base(getLife, life_percent, life_action)
-        life_thread = Thread(target=life.execute)
-        life_thread.start()
-        print("iniciando monitoramento da Vida")
+        life_value = getLife()
+
+        if life_value is not None:
+
+            life = Base(getLife, life_percent, life_action)
+            life_thread = Thread(target=life.execute)
+            life_thread.start()
+            print("iniciando monitoramento da Vida")
+        else:
+            print("Monitoramento da vida nao iniciada")
 
     if prayer_key:
-        prayer = Base(getPrayer, prayer_percent, prayer_action)
-        prayer_thread = Thread(target=prayer.execute)
-        prayer_thread.start()
-        print("iniciando monitoramento do Prayer")
+        prayer_value = getPrayer()
+    
+        if prayer_value is not None:
+            prayer = Base(getPrayer, prayer_percent, prayer_action)
+            prayer_thread = Thread(target=prayer.execute)
+            prayer_thread.start()
+            print("iniciando monitoramento do Prayer")
+        else:
+            print("Monitoramento da oracao nao iniciada")
 
     if pet_life_key:
-        pet_life = Base(getPet_life, pet_life_percent, life_pet_action)
-        pet_thread = Thread(target=pet_life.execute)
-        pet_thread.start()
-        print("iniciando monitoramento do Pet")
+        pet_life_value = getPet_life()
+        
+        if pet_life_value is not None:
+            pet_life = Base(getPet_life, pet_life_percent, life_pet_action)
+            pet_thread = Thread(target=pet_life.execute)
+            pet_thread.start()
+            print("iniciando monitoramento do Pet")
+        else:
+            print("Monitoramento do pet nao iniciado")
 
     exit()
 

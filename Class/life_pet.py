@@ -11,6 +11,12 @@ def getPet_life():
     ocr_processor = OCR()
     
     coords_pet_life = ocr_processor.data['coordinates']['coords_pet_life']
+
+    # Verifica se coords_pet_life é None e retorna None se for o caso
+    if coords_pet_life is None:
+        print("Barra de vida do pet não encontrada. (NAO MONITORANDO)")
+        return None
+
     percent = ocr_processor.ocr_from_coords(coords_pet_life)
 
     # Verifica se percent é None ou não numérico e trata a situação
