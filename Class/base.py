@@ -28,7 +28,10 @@ class Base:
                         self.action()
                     time.sleep(0.5)
                 except Exception as e:
-                    print(f"Error in {self.__class__.__name__}: {e}. Restarting...")
+                    from Config.coords import ImageFinder 
+                    finder = ImageFinder()
+                    finder.main()
+                    print(f"Reiniciando os calculos.")
                     continue
                 #print(f"{self.getter.__name__}: {value} %")
                 #clear_console()

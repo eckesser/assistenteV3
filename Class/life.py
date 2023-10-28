@@ -7,7 +7,11 @@ sys.path.append(root_directory)
 
 from OCR.ocr_module import OCR  # Alterando 'ocr' para 'OCR'
 
+# Contador global de tentativas falhas
+tentativas_falhas = 0
+
 def getLife():
+    global tentativas_falhas  # Usar a variável global
     ocr_processor = OCR()  # Alterando 'ocr' para 'OCR'
 
     coords_life = ocr_processor.data['coordinates']['coords_life']
@@ -21,8 +25,17 @@ def getLife():
 
     # Verifica se percent é None ou não numérico e trata a situação
     if percent is None or not isinstance(percent, (int, float)):
-        # Aqui você pode adicionar um log para registrar quando isso acontece
-        print(f"Barra de vida do nao encontrada.")
-        return 100  # Retorne um valor padrão (por exemplo, 100) ou qualquer valor que faça sentido para sua aplicação
+        tentativas_falhas += 1
+        #print(f"Barra de vida do nao encontrada. (Tentativa {tentativas_falhas})")
+        if tentativas_falhas >= 10:
+            print("Recalculando.")
+            from Config.coords import ImageFinder 
+            finder = ImageFinder()
+            finder.main()
+            tentativas_falhas = 0  # Resetar contador de tentativas
+        return 100  # Retorne um valor padrão (por exemplo, 100)
+
+    # Se percentual válido for encontrado, resetar o contador de tentativas falhas
+    tentativas_falhas = 0
 
     return percent

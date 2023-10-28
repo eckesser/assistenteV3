@@ -3,6 +3,7 @@ import psutil
 running = True
 paused = False
 restart = False
+threads_paused = False
 
 def clear_console():
     print('\033c')

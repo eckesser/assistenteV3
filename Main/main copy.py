@@ -30,7 +30,7 @@ from pystray import Icon as TrayIcon, MenuItem
 from threading import Thread
 from Main.main_menu import main_menu
 from Class.shared import running, paused, restart, kill_processes
-#from Class.keymanager import KeyManager
+
 
 
 life_key = ['']
@@ -106,7 +106,7 @@ def check_for_exit_or_pause_key():
     global running, paused, restart, tray_icon
     def on_key_event(e):
         global running, paused, restart, tray_icon
-        if e.name == 'end' and e.event_type == 'down':
+        if e.name == 'f11' and e.event_type == 'down':
             toggle_pause(tray_icon)
             paused = True
             running = False
@@ -142,8 +142,6 @@ def life_pet_action():
         print("Restaurando vida do pet.")
 
 from Class.keypresser import KeyPresser
-
-import time
 
 def press360sec():
     while True:
@@ -283,3 +281,4 @@ def main_threading():
 
 if __name__ == "__main__":
     main_menu(main_threading, tray_icon_manager)
+    

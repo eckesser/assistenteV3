@@ -49,7 +49,7 @@ class JsonViewerUpdated:
                     if isinstance(values, list):
                         values = ' + '.join(values)
                     elif isinstance(values, int):
-                        values = f"{values}%"
+                        values = f"{values} %"
                         
                     print(f"{display_key}: {values}")
                 
