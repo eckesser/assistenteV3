@@ -14,7 +14,8 @@ from Class.shared import kill_processes
 def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
     while True:
         clear_console()
-        print("\nRS3 Assist DEV")
+        print("\nRS3 Assist")
+        print("### DEV ###")
         print("-------------------------")
         print("1. Configurar teclas")
         print("2. Configurar porcentagem")
@@ -46,8 +47,7 @@ def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
             print("-------------------------")
             print("\n")
             from Config.perct_key import JsonSaver
-            saver = JsonSaver()
-            saver.input_and_save()
+            JsonSaver()
 
         elif choice == "3":
             clear_console()
@@ -81,14 +81,14 @@ def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
             print("Verificando se Runescape...")
             time.sleep(0.4)
             if is_runescape_running():
-                print("Runescape aberto.")
+                print("\nRunescape aberto.")
                 from Config.coords import ImageFinder
                 ImageFinder()
-                print("Aguarde o callback das barras de monitoramento... em 20 sec tudo sera minimizado")
+                print("\nAguarde o callback das barras de monitoramento... em 20 sec tudo sera minimizado")
                 time.sleep(0.4)
                 if main_threading_callback:
                     main_threading_callback()
-                    windows = gw.getWindowsWithTitle('RuneScape')
+                    windows = gw.getWindowsWithTitle('RS3 Assit')
                     if windows:
                         windows[0].activate()
                     time.sleep(20)

@@ -137,6 +137,7 @@ def life_pet_action():
         time.sleep(delay_ms / 1000)
         press(key)
         print("Restaurando vida do pet.")
+        time.sleep(1)
 
 from Class.keypresser import KeyPresser
 
