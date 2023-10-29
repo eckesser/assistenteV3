@@ -141,6 +141,17 @@ def life_pet_action():
 
 from Class.keypresser import KeyPresser
 
+def should_start_360sec_thread():
+    with open('Json/ulti.json', 'r') as f:
+        data = json.load(f)
+    
+    keys_to_check = ['ovl_key', 'anti_fire_key', 'anti_poison_key', 'aggression_key']
+    
+    for key in keys_to_check:
+        if data.get(key) is not None:
+            return True
+    return False
+
 def press360sec():
     while True:
         with open('Json/ulti.json', 'r') as f:
@@ -154,6 +165,17 @@ def press360sec():
                 time.sleep(1)    
         time_to_wait = random.randint(345, 360)
         time.sleep(time_to_wait)
+
+def should_start_720sec_thread():
+    with open('Json/ulti.json', 'r') as f:
+        data = json.load(f)
+    
+    keys_to_check = ['weapon_poison_key', 'necro_mage_key']
+    
+    for key in keys_to_check:
+        if data.get(key) is not None:
+            return True
+    return False
 
 def press720sec():
     while True:
@@ -196,13 +218,15 @@ def main_threading():
     window_monitor_thread = Thread(target=monitor_window_state)
     window_monitor_thread.start()
 
-    pressionar_thread = Thread(target=press360sec)
-    pressionar_thread.start()
-    print("Iniciando monitoramento de 360 segundos")
+    if should_start_360sec_thread():
+        pressionar_thread = Thread(target=press360sec)
+        pressionar_thread.start()
+        print("Iniciando monitoramento de 360 segundos")
 
-    pressionar_thread2 = Thread(target=press720sec)
-    pressionar_thread2.start()
-    print("Iniciando monitoramento de 720 segundos")
+    if should_start_720sec_thread():
+        pressionar_thread2 = Thread(target=press720sec)
+        pressionar_thread2.start()
+        print("Iniciando monitoramento de 720 segundos")
 
     if life_key:
         life_value = getLife()
