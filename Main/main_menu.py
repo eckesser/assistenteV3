@@ -14,7 +14,7 @@ from Class.shared import kill_processes
 def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
     while True:
         clear_console()
-        print("\nRS3 Assist")
+        print("\nRS3 Assist DEV")
         print("-------------------------")
         print("1. Configurar teclas")
         print("2. Configurar porcentagem")
@@ -24,7 +24,7 @@ def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
         print("6. Exit")
         print("-------------------------")
         print("Comandos:")
-        print("Botao END para Pause e Resume do programa.")
+        print("Botao F11 para Pause e Resume do programa.")
         print("Botao F12, para FECHAR o programa")
         print("-------------------------")
         print("Deixe sempre as barras de VIDA, PRAYER e VIDA do PET amostra")
@@ -84,12 +84,14 @@ def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
                 print("Runescape aberto.")
                 from Config.coords import ImageFinder
                 ImageFinder()
-                # windows = gw.getWindowsWithTitle('RuneScape')
-                # if windows:
-                #     windows[0].activate()
-                time.sleep(1)
+                print("Aguarde o callback das barras de monitoramento... em 20 sec tudo sera minimizado")
+                time.sleep(0.4)
                 if main_threading_callback:
                     main_threading_callback()
+                    windows = gw.getWindowsWithTitle('RuneScape')
+                    if windows:
+                        windows[0].activate()
+                    time.sleep(20)
             else:
                 print("Abra o runescape... Reiniciando programa.")
                 time.sleep(2)

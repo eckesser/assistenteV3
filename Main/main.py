@@ -21,7 +21,6 @@ from Class.base import Base
 from Class.life import getLife
 from Class.life_pet import getPet_life
 from Class.prayer import getPrayer
-from Config.rscheck import is_runescape_running
 from Log import support
 from Log.ErrorLogger import ErrorLogger
 from PIL import Image
@@ -30,8 +29,6 @@ from pystray import Icon as TrayIcon, MenuItem
 from threading import Thread
 from Main.main_menu import main_menu
 from Class.shared import running, paused, restart, kill_processes
-#from Class.keymanager import KeyManager
-
 
 life_key = ['']
 life_percent = 1
@@ -106,7 +103,7 @@ def check_for_exit_or_pause_key():
     global running, paused, restart, tray_icon
     def on_key_event(e):
         global running, paused, restart, tray_icon
-        if e.name == 'end' and e.event_type == 'down':
+        if e.name == 'f11' and e.event_type == 'down':
             toggle_pause(tray_icon)
             paused = True
             running = False
@@ -143,47 +140,31 @@ def life_pet_action():
 
 from Class.keypresser import KeyPresser
 
-import time
-
 def press360sec():
     while True:
-        # Lendo o arquivo Json/ulti.json
         with open('Json/ulti.json', 'r') as f:
             data = json.load(f)
-
         keys_to_check = ['ovl_key', 'anti_fire_key', 'anti_poison_key', 'aggression_key']
-
         for key in keys_to_check:
             value = data.get(key)
-            
-            # Se o valor não for nulo, crie uma instância da KeyPresser e chame o método press
             if value:
                 keypress = KeyPresser(key, data)
                 keypress.press()
-                time.sleep(1)  # Espera 1 segundos entre as variáveis
-
-        # Espera um tempo aleatório entre 345 e 360 segundos
+                time.sleep(1)    
         time_to_wait = random.randint(345, 360)
         time.sleep(time_to_wait)
 
 def press720sec():
     while True:
-        # Lendo o arquivo Json/ulti.json
         with open('Json/ulti.json', 'r') as f:
             data = json.load(f)
-
         keys_to_check = ['weapon_poison_key', 'necro_mage_key']
-
         for key in keys_to_check:
             value = data.get(key)
-            
-            # Se o valor não for nulo, crie uma instância da KeyPresser e chame o método press
             if value:
                 keypress = KeyPresser(key, data)
                 keypress.press()
-                time.sleep(1)  # Espera 1 segundos entre as variáveis
-
-        # Espera um tempo aleatório entre 690 e 720 segundos
+                time.sleep(1)
         time_to_wait = random.randint(690, 720)
         time.sleep(time_to_wait)
 
@@ -204,29 +185,6 @@ def load_config_from_json():
     life_percent = percent_config.get('life_percent', life_percent)
     prayer_percent = percent_config.get('prayer_percent', prayer_percent)
     pet_life_percent = percent_config.get('pet_life_percent', pet_life_percent)
-
-def execute_classes_in_sequence():
-    retry_count = 0
-    while not is_runescape_running() and retry_count < 3:
-        print('Abra o runescape e tente novamente.')
-        time.sleep(5)
-        retry_count += 1
-    if retry_count == 3:
-        print('Runescape não detectado após várias tentativas. Fechando o assistente.')
-        exit()
-    print('Runescape aberto.')
-
-    from Config.coords import ImageFinder
-    from Config.perct_key import JsonSaver
-    from Config.keys import KeyManager
-
-    try:
-        ImageFinder()
-        KeyManager()
-        JsonSaver()
-
-    except Exception:
-        print(f"An error occurred. Restarting the sequence.")
 
 def main_threading():
     load_config_from_json()

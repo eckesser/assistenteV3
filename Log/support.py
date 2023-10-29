@@ -7,18 +7,15 @@ class Support:
     
     LOG_PATH = os.path.dirname(os.path.abspath(__file__))
     ZIP_NAME = os.path.join(LOG_PATH, "Log.zip")
-    SUPPORT_EMAIL = "rs.assist.log@gmail.com"
-    PASSWORD = "Y7d9K3f0A2m8"  # Senha gerada para a criptografia. Guarde-a em um local seguro!
+    SUPPORT_EMAIL = ""
+    PASSWORD = "Y7d9K3f0A2m8" 
 
     @classmethod
     def zip_logs(cls):
-        # Se o arquivo Log.zip já existir, remova-o
         if os.path.exists(cls.ZIP_NAME):
             os.remove(cls.ZIP_NAME)
-
-        # Crie o arquivo zip e adicione os logs com criptografia AES
         with pyzipper.AESZipFile(cls.ZIP_NAME, 'w', compression=pyzipper.ZIP_LZMA, encryption=pyzipper.WZ_AES) as zipf:
-            zipf.setpassword(cls.PASSWORD.encode('utf-8'))  # A senha precisa estar em bytes
+            zipf.setpassword(cls.PASSWORD.encode('utf-8')) 
             for foldername, subfolders, filenames in os.walk(cls.LOG_PATH):
                 for filename in filenames:
                     if filename.endswith('.txt'):
@@ -42,5 +39,5 @@ class Support:
             toast=False
         )
 
-        time.sleep(10)  # Mantenha a thread viva por 10 segundos para que a notificação seja mostrada.
+        time.sleep(10) 
         cls.open_log_folder()

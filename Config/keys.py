@@ -14,11 +14,9 @@ class KeyManager:
         }
 
     def get_label(self, key):
-        """Return the user-friendly label for the key."""
         return self.label_mapping.get(key, key)
 
     def get_keys_for(self, label, max_keys):
-        """Get keys from user for a specific label."""
         keys = []
         while len(keys) < max_keys:
             key = input(f"Digite uma tecla para {self.get_label(label)} ({len(keys)+1}/{max_keys}): ")
@@ -29,14 +27,13 @@ class KeyManager:
         return keys
 
     def get_number_of_keys(self, label, max_keys):
-        """Get the number of keys the user wants to assign."""
         while True:
             try:
                 print(f"\nCaso nao deseje mapear a {self.get_label(label)}, aperte ENTER!")
                 print("-------------------------")
                 print("\n")
                 num = input(f"Quantas teclas você deseja designar para {self.get_label(label)} (máximo {max_keys}): ")
-                if not num:  # If user input is empty
+                if not num:
                     return None
                 num = int(num)
                 if 0 < num <= max_keys:
@@ -73,23 +70,20 @@ class KeyManager:
                 print("Opção inválida. Tente novamente.")
 
     def load_existing_data(self, path):
-        """Load existing data from a JSON file."""
         if os.path.exists(path):
             with open(path, 'r') as f:
                 return json.load(f)
         return {}
 
     def save_to_json(self, data, path):
-        """Save data to a JSON file."""
         existing_data = self.load_existing_data(path)
-        existing_data.update(data)  # Update the existing data with the new data
+        existing_data.update(data)
         with open(path, 'w') as f:
             json.dump(existing_data, f, indent=4)
 
     def run(self):
         if not os.path.exists("Json"):
             os.mkdir("Json")
-
         label, max_keys = self.choose_label_to_edit()
         num_keys = self.get_number_of_keys(label, max_keys)
         data_to_save = {label: self.get_keys_for(label, num_keys) if num_keys else None}

@@ -9,10 +9,8 @@ class KeyPresser:
         if not self.tecla_config or self.tecla_config[0] is None:
             return
         try:
-            # Pressionando as teclas
             for key in self.tecla_config:
                 pyautogui.keyDown(key)
-            # Liberando as teclas
             for key in self.tecla_config:
                 pyautogui.keyUp(key)
             print(f"Teclas {self.tecla_config} pressionadas com sucesso.")

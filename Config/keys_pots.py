@@ -25,11 +25,9 @@ class KeyManagerPot:
         """Reset the JSON file to its default structure."""
         json_path = os.path.join("Json", "ulti.json")
         
-        # Delete existing JSON file if it exists
         if os.path.exists(json_path):
             os.remove(json_path)
         
-        # Create a new JSON with the default structure
         default_structure = {
             "ovl_key": None,
             "anti_fire_key":  None,
@@ -44,11 +42,9 @@ class KeyManagerPot:
         return [key.strip() for key in keys]
 
     def get_label(self, key):
-        """Return the user-friendly label for the key."""
         return self.label_mapping.get(key, key)
 
     def get_key_for(self, label):
-        """Get key combination from user for a specific label."""
         key_input = input(f"Defina a combinação de teclas para {self.get_label(label)} (Exemplo: alt+2, coloque o +) (pressione Enter para pular): ")
         if not key_input.strip():
             return None
@@ -62,7 +58,7 @@ class KeyManagerPot:
             print(f"{len(self.label_mapping) + 1}. Salvar e sair")
 
             choice = input("\nDigite a opção desejada: ")
-            clear_console()  # Clear the console after each choice
+            clear_console()
             try:
                 choice = int(choice)
                 if 1 <= choice <= len(self.label_mapping):
@@ -73,16 +69,14 @@ class KeyManagerPot:
                 print("Opção inválida. Tente novamente.")
 
     def load_existing_data(self, path):
-        """Load existing data from a JSON file."""
         if os.path.exists(path):
             with open(path, 'r') as f:
                 return json.load(f)
         return {}
 
     def save_to_json(self, data, path):
-        """Save data to a JSON file."""
         existing_data = self.load_existing_data(path)
-        existing_data.update(data)  # Update the existing data with the new data
+        existing_data.update(data) 
         with open(path, 'w') as f:
             json.dump(existing_data, f, indent=4)    
 
@@ -96,16 +90,13 @@ class KeyManagerPot:
             if selected_key is None:
                 break
             user_input = self.get_key_for(selected_key)
-            # Always update the dictionary even if user_input is None
             data[selected_key] = user_input
-
-        # Convert Python None to JSON null before saving
         for key, value in data.items():
             if value is None:
                 data[key] = None
 
         self.save_to_json(data, os.path.join("Json", "ulti.json"))
-        main_menu()  # Redirect the user to the main menu after saving
+        main_menu()
 
 def execute_manager():
     manager = KeyManagerPot()
