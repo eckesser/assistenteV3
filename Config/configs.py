@@ -26,7 +26,8 @@ class JsonViewerUpdated:
                 "anti_poison_key": "Antipoison",
                 "aggression_key": "Aggression",
                 "weapon_poison_key": "Weapon poison potion",
-                "necro_mage_key": "Darkness ou Animate Dead"
+                "necro_mage_key": "Darkness ou Animate Dead",
+                "elven_shard_key": "Anciente elven ritual shard"
             }
         }
 

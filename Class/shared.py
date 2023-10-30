@@ -7,6 +7,8 @@ restart = False
 threads_paused = False
 pause_condition = threading.Condition()
 
+
+press300sec_running = True   
 press360sec_running = True
 press720sec_running = True
 life_thread_running = True

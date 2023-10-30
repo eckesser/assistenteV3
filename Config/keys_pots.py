@@ -17,7 +17,8 @@ class KeyManagerPot:
             'anti_poison_key': 'Anti-Poison',
             'aggression_key': 'Aggression potion',
             'weapon_poison_key': 'Weapon poison',
-            'necro_mage_key': 'Darkness ou Animate Dead'
+            'necro_mage_key': 'Darkness ou Animate Dead',
+            'elven_shard_key': 'Anciente elven ritual shard'
         }
         self.reset_json()
 
@@ -34,7 +35,8 @@ class KeyManagerPot:
             "anti_poison_key": None,
             "aggression_key": None,
             "weapon_poison_key": None,
-            "necro_mage_key": None
+            "necro_mage_key": None,
+            "elven_shard_key": None
         }
         self.save_to_json(default_structure, json_path)
     def parse_key_combination(self, input_string):
