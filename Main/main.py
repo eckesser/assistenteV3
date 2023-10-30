@@ -182,7 +182,7 @@ def press300sec():
                     keypress = KeyPresser(key, data)
                     keypress.press()
                     time.sleep(1)    
-            time_to_wait = random.randint(290, 300)
+            time_to_wait = random.randint(301, 310)
             time.sleep(time_to_wait)
         else:
             time.sleep(1)
@@ -294,7 +294,7 @@ def main_threading():
 
     if should_start_720sec_thread():
         pressionar_thread2 = Thread(target=press720sec)
-        time.sleep(0.5)
+        time.sleep(0.5) 
         pressionar_thread2.start()
         print("Iniciando monitoramento de 720 segundos")
 
