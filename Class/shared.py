@@ -1,9 +1,17 @@
 import psutil
+import threading
 
 running = True
 paused = False
 restart = False
 threads_paused = False
+pause_condition = threading.Condition()
+
+press360sec_running = True
+press720sec_running = True
+life_thread_running = True
+prayer_thread_running = True
+pet_thread_running = True
 
 def clear_console():
     print('\033c')

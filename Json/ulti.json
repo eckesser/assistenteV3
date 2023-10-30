@@ -1,11 +1,16 @@
 {
-    "ovl_key": null,
-    "anti_fire_key": null,
+    "ovl_key": [
+        "alt",
+        "1"
+    ],
+    "anti_fire_key": [
+        "f7"
+    ],
     "anti_poison_key": null,
     "aggression_key": null,
-    "weapon_poison_key": null,
-    "necro_mage_key": [
+    "weapon_poison_key": [
         "alt",
-        "q"
-    ]
+        "4"
+    ],
+    "necro_mage_key": null
 }

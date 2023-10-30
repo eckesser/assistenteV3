@@ -25,6 +25,7 @@ def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
         print("6. Exit")
         print("-------------------------")
         print("Comandos:")
+        print("Botao F10 para voltar ao menu inicial do programa.")
         print("Botao F11 para Pause e Resume do programa.")
         print("Botao F12, para FECHAR o programa")
         print("-------------------------")
@@ -85,6 +86,7 @@ def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
                 from Config.coords import ImageFinder
                 ImageFinder()
                 print("\nAguarde o callback das barras de monitoramento... em 20 sec tudo sera minimizado")
+                print("\n")
                 time.sleep(0.4)
                 if main_threading_callback:
                     main_threading_callback()

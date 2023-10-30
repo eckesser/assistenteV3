@@ -6,9 +6,6 @@ import sys
 import time
 import traceback
 import random
-import warnings
-
-warnings.filterwarnings("ignore", category=UserWarning, module="torch.nn.modules.rnn")
 
 root_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_directory)
@@ -32,7 +29,6 @@ from pystray import Icon as TrayIcon, MenuItem
 from threading import Thread
 from Main.main_menu import main_menu
 from Class.shared import running, paused, restart, kill_processes
-from Class.shared import press360sec_running, press720sec_running, life_thread_running, prayer_thread_running, pet_thread_running, pause_condition
 
 life_key = ['']
 life_percent = 1
@@ -46,25 +42,19 @@ def open_log_directory(icon):
     support.Support.notify_user()
 
 def restart_program(icon):
-    global running, press360sec_running, press720sec_running, life_thread_running, prayer_thread_running, pet_thread_running
+    global running
     running = False
-    press360sec_running = False
-    press720sec_running = False
-    life_thread_running = False
-    prayer_thread_running = False
-    pet_thread_running = False
-    time.sleep(2)
     icon.stop()
     os.system('python ' + __file__)
     exit(0)
 
 def minimize_window():
-    windows = gw.getWindowsWithTitle('RS Assist')
+    windows = gw.getWindowsWithTitle('RS3 Assist')
     if windows:
         windows[0].hide()
 
 def restore_window():
-    windows = gw.getWindowsWithTitle('RS Assist')
+    windows = gw.getWindowsWithTitle('RS3 Assist')
     if windows:
         window = windows[0]        
         if window.isHidden:
@@ -74,13 +64,10 @@ def restore_window():
 
 def monitor_window_state():
     while running:
-        if not paused:
-            windows = gw.getWindowsWithTitle('RS Assist')
-            if windows and windows[0].isMinimized:
-                windows[0].hide()
-            time.sleep(0.5)
-        else:
-            time.sleep(1)
+        windows = gw.getWindowsWithTitle('RS3 Assist')
+        if windows and windows[0].isMinimized:
+            windows[0].hide()
+        time.sleep(0.5)
 
 def exit_program(icon):
     global running
@@ -94,25 +81,23 @@ def tray_icon_manager():
     icon_path_green = os.path.join(root_directory, 'Icon', 'green.png')
     icon_image_green = Image.open(icon_path_green)
     menu = (
-        MenuItem('Open', lambda icon, item: restore_window()),
+        #MenuItem('Open', lambda icon, item: restore_window()),
         MenuItem('Pause/Resume', lambda icon, item: toggle_pause(icon)),
         MenuItem('Restart', lambda icon, item: restart_program(icon)),
-        MenuItem('Suporte', lambda icon, item: open_log_directory(icon)),
+        #MenuItem('Suporte', lambda icon, item: open_log_directory(icon)),
         MenuItem('Exit', lambda icon, item: exit_program(icon))
     )
-    tray_icon = TrayIcon("RS Assist", icon_image_green, "RS Assist", menu)
+    tray_icon = TrayIcon("RS3 Assist", icon_image_green, "RS3 Assist", menu)
     tray_icon.run()
 
 def toggle_pause(Icon):
-    global paused, tray_icon, pause_condition
-    with pause_condition:
-        paused = not paused
-        pause_condition.notify_all()
-        if paused:
-            tray_icon.icon = Image.open(os.path.join(root_directory, 'Icon', 'red.png'))
-        else:
-            tray_icon.icon = Image.open(os.path.join(root_directory, 'Icon', 'green.png'))
-        tray_icon.update_menu()
+    global paused, tray_icon
+    paused = not paused
+    if paused:
+        tray_icon.icon = Image.open(os.path.join(root_directory, 'Icon', 'red.png'))
+    else:
+        tray_icon.icon = Image.open(os.path.join(root_directory, 'Icon', 'green.png'))
+    tray_icon.update_menu()
 
 def check_for_exit_or_pause_key():
     global running, paused, restart, tray_icon
@@ -120,12 +105,11 @@ def check_for_exit_or_pause_key():
         global running, paused, restart, tray_icon
         if e.name == 'f11' and e.event_type == 'down':
             toggle_pause(tray_icon)
-            paused = not paused
-        elif e.name == 'end' and e.event_type == 'down':
-            restart_program(tray_icon)
+            paused = True
+            running = False
         elif e.name == 'f12' and e.event_type == 'down':
             restart = True
-            running = False 
+            running = False
             tray_icon.stop()
             kill_processes()
             exit()
@@ -169,22 +153,18 @@ def should_start_360sec_thread():
     return False
 
 def press360sec():
-    global press360sec_running
-    while running and press360sec_running: 
-        if not paused:
-            with open('Json/ulti.json', 'r') as f:
-                data = json.load(f)
-            keys_to_check = ['ovl_key', 'anti_fire_key', 'anti_poison_key', 'aggression_key']
-            for key in keys_to_check:
-                value = data.get(key)
-                if value:
-                    keypress = KeyPresser(key, data)
-                    keypress.press()
-                    time.sleep(1)    
-            time_to_wait = random.randint(345, 360)
-            time.sleep(time_to_wait)
-        else:
-            time.sleep(1)
+    while True:
+        with open('Json/ulti.json', 'r') as f:
+            data = json.load(f)
+        keys_to_check = ['ovl_key', 'anti_fire_key', 'anti_poison_key', 'aggression_key']
+        for key in keys_to_check:
+            value = data.get(key)
+            if value:
+                keypress = KeyPresser(key, data)
+                keypress.press()
+                time.sleep(1)    
+        time_to_wait = random.randint(345, 360)
+        time.sleep(time_to_wait)
 
 def should_start_720sec_thread():
     with open('Json/ulti.json', 'r') as f:
@@ -198,22 +178,18 @@ def should_start_720sec_thread():
     return False
 
 def press720sec():
-    global press720sec_running
-    while running and press720sec_running:
-        if not paused:
-            with open('Json/ulti.json', 'r') as f:
-                data = json.load(f)
-            keys_to_check = ['weapon_poison_key', 'necro_mage_key']
-            for key in keys_to_check:
-                value = data.get(key)
-                if value:
-                    keypress = KeyPresser(key, data)
-                    keypress.press()
-                    time.sleep(1)
-            time_to_wait = random.randint(690, 720)
-            time.sleep(time_to_wait)
-        else:
-            time.sleep(1)
+    while True:
+        with open('Json/ulti.json', 'r') as f:
+            data = json.load(f)
+        keys_to_check = ['weapon_poison_key', 'necro_mage_key']
+        for key in keys_to_check:
+            value = data.get(key)
+            if value:
+                keypress = KeyPresser(key, data)
+                keypress.press()
+                time.sleep(1)
+        time_to_wait = random.randint(690, 720)
+        time.sleep(time_to_wait)
 
 def load_config_from_json():
 
@@ -241,13 +217,6 @@ def main_threading():
     
     window_monitor_thread = Thread(target=monitor_window_state)
     window_monitor_thread.start()
-
-    global press360sec_running, press720sec_running, life_thread_running, prayer_thread_running, pet_thread_running
-    press360sec_running = True
-    press720sec_running = True
-    life_thread_running = True
-    prayer_thread_running = True
-    pet_thread_running = True
 
     if should_start_360sec_thread():
         pressionar_thread = Thread(target=press360sec)
