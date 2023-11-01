@@ -1,17 +1,17 @@
 {
     "ovl_key": [
-        "alt",
-        "1"
+        "o"
     ],
     "anti_fire_key": null,
     "anti_poison_key": null,
-    "aggression_key": null,
-    "weapon_poison_key": null,
-    "necro_mage_key": [
-        "alt",
-        "q"
+    "aggression_key": [
+        "k"
     ],
+    "weapon_poison_key": [
+        "i"
+    ],
+    "necro_mage_key": null,
     "elven_shard_key": [
-        "="
+        "p"
     ]
 }

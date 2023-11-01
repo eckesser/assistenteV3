@@ -3,13 +3,11 @@ import json
 import os
 from PIL import Image
 import pytesseract
-from Config.rscheck import is_runescape_running
-import easyocr
 
 class ImageFinder:
     
     def __init__(self):
-        pass
+        self.tesseract_cmd = '/usr/bin/tesseract'  # Ajuste o caminho para o Tesseract se necessário
 
     def capture_image_from_coords(self, coords, file_name):
         if coords:
@@ -19,9 +17,9 @@ class ImageFinder:
             image.save(image_path)
 
     def get_reference_characters_from_image(self, path):
-        reader = easyocr.Reader(['en'])
-        results = reader.readtext(path)
-        chars = ''.join([result[1] for result in results])
+        image = Image.open(path)
+        text = pytesseract.image_to_string(image, lang='eng')
+        chars = ''.join(text)
         return set(chars)
 
     def find_text_coords(self, region):
@@ -33,24 +31,21 @@ class ImageFinder:
             region[3],
         )
         screenshot = pyautogui.screenshot(region=expanded_region)
-        reader = easyocr.Reader(['en'])
-        results = reader.readtext(screenshot)
-        texts = [result[1] for result in results if result[-2] >= 0.6]
-        result = ' '.join(texts)
-        if all(char in reference_chars for char in result):
+        text = pytesseract.image_to_string(screenshot, lang='eng')
+        if all(char in reference_chars for char in text):
             text_location = pyautogui.locateOnScreen(screenshot, region=expanded_region)
             if text_location:
-                return result, f"{int(text_location.left)}, {int(text_location.top)}, {int(text_location.left + text_location.width)}, {int(text_location.top + text_location.height)}"
+                return text, f"{int(text_location.left)}, {int(text_location.top)}, {int(text_location.left + text_location.width)}, {int(text_location.top + text_location.height)}"
         return None, None
 
     def find_image_hp_coords(self, image_path):
         location = pyautogui.locateOnScreen(image_path, confidence=0.8)
         if location:
             adjusted_coords = (
-                location.left + 21,
+                location.left + 0,
                 location.top + 0,
-                location.left + 113,
-                location.top + 16
+                location.left + 0,
+                location.top + 0
             )
             return f"{adjusted_coords[0]}, {adjusted_coords[1]}, {adjusted_coords[2]}, {adjusted_coords[3]}"
         else:
@@ -83,33 +78,27 @@ class ImageFinder:
             return None
 
     def main(self):
-        if is_runescape_running():
-            coords_life = self.find_image_hp_coords('Imagem/cropped_hp.png')
-            coords_pray = self.find_image_prayer_coords('Imagem/cropped_prayer.png')
-            coords_pet_life = self.find_image_pet_coords('Imagem/cropped_summon_life.png')
+        coords_life = self.find_image_hp_coords('Imagem/cropped_hp.png')
+        coords_pray = self.find_image_prayer_coords('Imagem/cropped_prayer.png')
+        coords_pet_life = self.find_image_pet_coords('Imagem/cropped_summon_life.png')
 
-            data = {
-                "coordinates": {
-                    "coords_life": coords_life,
-                    "coords_pray": coords_pray,
-                    "coords_pet_life": coords_pet_life
-                }
+        data = {
+            "coordinates": {
+                "coords_life": coords_life,
+                "coords_pray": coords_pray,
+                "coords_pet_life": coords_pet_life
             }
+        }
 
-            if not os.path.exists('img_return'):
-                os.makedirs('img_return')
-            
-            self.capture_image_from_coords(coords_life, "life_image.png")
-            self.capture_image_from_coords(coords_pray, "pray_image.png")
-            self.capture_image_from_coords(coords_pet_life, "pet_life_image.png")
+        if not os.path.exists('img_return'):
+            os.makedirs('img_return')
+        
+        self.capture_image_from_coords(coords_life, "life_image.png")
+        self.capture_image_from_coords(coords_pray, "pray_image.png")
+        self.capture_image_from_coords(coords_pet_life, "pet_life_image.png")
 
-            if not os.path.exists('Json'):
-                os.makedirs('Json')
+        if not os.path.exists('Json'):
+            os.makedirs('Json')
 
-            with open('Json/coords.json', 'w') as f:
-                json.dump(data, f, indent=4)
-        else:
-            print("RuneScape is not running.")
-
-finder = ImageFinder()
-finder.main()
+        with open('Json/coords.json', 'w') as f:
+            json.dump(data, f, indent=4)

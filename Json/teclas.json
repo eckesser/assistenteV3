@@ -1,12 +1,13 @@
 {
     "life_key": [
-        "f6"
+        "f1",
+        "f2",
+        "f3"
     ],
     "prayer_key": [
-        "tab"
+        "h"
     ],
     "pet_life_key": [
-        "5",
-        "4"
+        "l"
     ]
 }

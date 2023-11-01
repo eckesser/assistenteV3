@@ -180,7 +180,7 @@ def life_pet_action():
         print("Restaurando vida do pet.")
         time.sleep(1)
 
-from Class.keypresser import KeyPresser
+from Class.KeyPresser import KeyPresser
 
 def should_start_300sec_thread():
     with open('Json/ulti.json', 'r') as f:

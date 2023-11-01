@@ -1,7 +1,7 @@
 {
     "coordinates": {
-        "coords_life": null,
-        "coords_pray": null,
-        "coords_pet_life": null
+        "coords_life": "504, 846, 596, 862",
+        "coords_pray": "745, 846, 803, 862",
+        "coords_pet_life": "33, 896, 170, 916"
     }
 }
