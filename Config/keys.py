@@ -62,7 +62,7 @@ class KeyManager:
                 return 'prayer_key', 1
             elif choice == "3":
                 clear_console() 
-                return 'pet_life_key', 2
+                return 'pet_life_key', 3
             elif choice == "4":
                 clear_console() 
                 return main_menu()

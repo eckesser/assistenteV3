@@ -6,12 +6,10 @@
     "anti_fire_key": null,
     "anti_poison_key": null,
     "aggression_key": null,
-    "weapon_poison_key": [
+    "weapon_poison_key": null,
+    "necro_mage_key": [
         "alt",
-        "4"
+        "q"
     ],
-    "necro_mage_key": null,
-    "elven_shard_key": [
-        "f7"
-    ]
+    "elven_shard_key": null
 }

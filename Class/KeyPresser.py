@@ -16,3 +16,4 @@ class KeyPresser:
             print(f"Teclas {self.tecla_config} pressionadas com sucesso.")
         except Exception as e:
             print(f"Erro ao pressionar as teclas {self.tecla_config}: {e}")
+    
