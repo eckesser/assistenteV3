@@ -25,7 +25,7 @@ def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
         print("6. Exit")
         print("-------------------------")
         print("Comandos:")
-        #print("Botao F10 para voltar ao menu inicial do programa.")
+        print("Botao F10 REINICAR programa.")
         #print("Botao F11 para Pause e Resume do programa.")
         print("Botao F12, para FECHAR o programa")
         print("-------------------------")
@@ -49,7 +49,8 @@ def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
             print("-------------------------")
             print("\n")
             from Config.perct_key import JsonSaver
-            JsonSaver()
+            saver = JsonSaver()
+            saver.input_and_save()
 
         elif choice == "3":
             clear_console()
@@ -82,23 +83,23 @@ def main_menu(main_threading_callback=None, tray_icon_manager_callback=None):
             time.sleep(0.4)
             print("Verificando se Runescape...")
             time.sleep(0.4)
-            if is_runescape_running():
-                print("\nRunescape aberto.")
-                from Config.coords import ImageFinder
-                ImageFinder()
-                print("\nAguarde o callback das barras de monitoramento... em 20 sec tudo sera minimizado")
-                print("\n")
-                time.sleep(0.4)
-                if main_threading_callback:
-                    main_threading_callback()
-                    windows = gw.getWindowsWithTitle('RS3 Assit')
-                    if windows:
-                        windows[0].activate()
-                    time.sleep(20)
-            else:
-                print("Abra o runescape... Reiniciando programa.")
-                time.sleep(2)
-                main_menu(main_threading_callback, tray_icon_manager_callback)
+            #if is_runescape_running():
+            # print("\nRunescape aberto.")
+            from Config.coords import ImageFinder
+            ImageFinder()
+            print("\nAguarde o callback das barras de monitoramento... em 20 sec tudo sera minimizado")
+            print("\n")
+            time.sleep(0.4)
+            if main_threading_callback:
+                main_threading_callback()
+                # windows = gw.getWindowsWithTitle('RS3 Assit')
+                # if windows:
+                #     windows[0].activate()
+                # time.sleep(20)
+            # else:
+            #     print("Abra o runescape... Reiniciando programa.")
+            #     time.sleep(2)
+            #     main_menu(main_threading_callback, tray_icon_manager_callback)
                 
         elif choice == "6":
             global running

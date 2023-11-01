@@ -7,6 +7,9 @@ import time
 import traceback
 import random
 import warnings
+import subprocess
+import win32gui
+import win32con
 
 warnings.filterwarnings("ignore", category=UserWarning, module="torch.nn.modules.rnn")
 
@@ -45,6 +48,7 @@ def open_log_directory(icon):
     support.Support.zip_logs()
     support.Support.notify_user()
 
+
 def restart_program(icon):
     global running, press300sec_running, press360sec_running, press720sec_running, life_thread_running, prayer_thread_running, pet_thread_running
     running = False
@@ -54,24 +58,44 @@ def restart_program(icon):
     life_thread_running = False
     prayer_thread_running = False
     pet_thread_running = False
-    time.sleep(2)
     icon.stop()
-    os.system('python ' + __file__)
-    exit(0)
+    time.sleep(2)  
+    
+    script_file = os.path.abspath(__file__)
+    python_executable = sys.executable
+
+    batch_commands = f"""@echo off
+timeout /t 5
+"{python_executable}" "{script_file}"
+del "%~f0"
+"""
+    batch_file_path = os.path.join(os.path.dirname(script_file), "restart.bat")
+    with open(batch_file_path, "w") as batch_file:
+        batch_file.write(batch_commands)
+
+    subprocess.Popen(batch_file_path, shell=True)
+    sys.exit(0)
 
 def minimize_window():
     windows = gw.getWindowsWithTitle('RS Assist')
     if windows:
         windows[0].hide()
 
+
 def restore_window():
-    windows = gw.getWindowsWithTitle('RS Assist')
-    if windows:
-        window = windows[0]        
-        if window.isHidden:
-            window.restore()
-        else:
-            window.activate()
+    def window_enum_handler(hwnd, extra):
+        if 'RS Assist' in win32gui.GetWindowText(hwnd):
+            win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+            win32gui.SetForegroundWindow(hwnd)
+            return extra.append(True)  # Adiciona um indicador de sucesso à lista
+
+    found = []
+    win32gui.EnumWindows(window_enum_handler, found)
+    
+    if not found:  # Se a lista está vazia, a janela não foi encontrada
+        print("A janela 'RS Assist' não foi encontrada.")
+    else:
+        print("A janela 'RS Assist' foi restaurada.")
 
 def monitor_window_state():
     while running:
@@ -96,7 +120,7 @@ def tray_icon_manager():
     icon_image_green = Image.open(icon_path_green)
     menu = (
         MenuItem('Open', lambda icon, item: restore_window()),
-        MenuItem('Pause/Resume', lambda icon, item: toggle_pause(icon)),
+        # MenuItem('Pause/Resume', lambda icon, item: toggle_pause(icon)),
         MenuItem('Restart', lambda icon, item: restart_program(icon)),
         MenuItem('Suporte', lambda icon, item: open_log_directory(icon)),
         MenuItem('Exit', lambda icon, item: exit_program(icon))
@@ -122,7 +146,7 @@ def check_for_exit_or_pause_key():
         if e.name == 'f11' and e.event_type == 'down':
             toggle_pause(tray_icon)
             paused = not paused
-        elif e.name == 'end' and e.event_type == 'down':                                    
+        elif e.name == 'f10' and e.event_type == 'down':                                    
             restart_program(tray_icon)
         elif e.name == 'f12' and e.event_type == 'down':            
             restart = True

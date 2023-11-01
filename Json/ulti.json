@@ -11,5 +11,7 @@
         "alt",
         "q"
     ],
-    "elven_shard_key": null
+    "elven_shard_key": [
+        "="
+    ]
 }
