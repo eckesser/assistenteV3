@@ -3,7 +3,6 @@ import json
 import os
 from PIL import Image
 import pytesseract
-from Config.rscheck import is_runescape_running
 import easyocr
 
 class ImageFinder:
@@ -47,10 +46,10 @@ class ImageFinder:
         location = pyautogui.locateOnScreen(image_path, confidence=0.8)
         if location:
             adjusted_coords = (
-                location.left + 21,
+                location.left + 26,
                 location.top + 0,
-                location.left + 113,
-                location.top + 16
+                location.left + 116,
+                location.top + 26
             )
             return f"{adjusted_coords[0]}, {adjusted_coords[1]}, {adjusted_coords[2]}, {adjusted_coords[3]}"
         else:
@@ -83,7 +82,7 @@ class ImageFinder:
             return None
 
     def main(self):
-        if is_runescape_running():
+        if True:
             coords_life = self.find_image_hp_coords('Imagem/cropped_hp.png')
             coords_pray = self.find_image_prayer_coords('Imagem/cropped_prayer.png')
             coords_pet_life = self.find_image_pet_coords('Imagem/cropped_summon_life.png')
@@ -108,8 +107,9 @@ class ImageFinder:
 
             with open('Json/coords.json', 'w') as f:
                 json.dump(data, f, indent=4)
-        else:
-            print("RuneScape is not running.")
 
 finder = ImageFinder()
 finder.main()
+
+# coords_life = finder.find_image_hp_coords('Imagem/cropped_hp.png')
+# print(coords_life)
